@@ -1,5 +1,58 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD POST request to add a new game
+POST http://localhost:3000/games
+Content-Type: application/json
 
-###
+{
+  "gameId": 13,
+  "title": "Resident Evil Village",
+  "description": "A survival horror game",
+  "publisher": "Capcom",
+  "category": "Horror",
+  "startingPrice": 59,
+  "auctionEndDate": "2024-11-04",
+  "bids": []
+}
+
+> {%
+    client.test("Game added successfully", function () {
+        client.assert(response.status === 201, "Response status is not 201");
+    });
+%}
+
+
+### BAD POST request - Missing required fields
+POST http://localhost:3000/games
+Content-Type: application/json
+
+{
+  "title": "Resident Evil Village"
+}
+
+> {%
+    client.test("Missing fields results in 400 Bad Request", function () {
+        client.assert(response.status === 400, "Response status is not 400");
+        client.assert(response.body.message.includes("Missing required fields"), "Expected missing fields error");
+    });
+%}
+
+### BAD POST request - Game with the same ID already exists
+POST http://localhost:3000/games
+Content-Type: application/json
+
+{
+  "gameId": 1,
+  "title": "Duplicate Game",
+  "description": "A duplicate game",
+  "publisher": "Capcom",
+  "category": "Horror",
+  "startingPrice": 59,
+  "auctionEndDate": "2024-11-04",
+  "bids": []
+}
+
+> {%
+    client.test("Game ID already exists results in 409 Conflict", function () {
+        client.assert(response.status === 409, "Response status is not 409");
+        client.assert(response.body.message.includes("already exists"), "Expected conflict error");
+    });
+%}

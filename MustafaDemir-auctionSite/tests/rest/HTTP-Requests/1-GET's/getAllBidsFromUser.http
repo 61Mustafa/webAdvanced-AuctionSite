@@ -1,5 +1,47 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD GET request to return bids for a specific user with bids
+GET http://localhost:3000/users/1/bids
+Accept: application/json
+
+> {%
+    client.test("Bids for user ID 1 retrieved successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(Array.isArray(response.body.bids), "Expected an array of bids");
+        client.assert(response.body.bids.length > 0, "Expected at least one bid for user ID 1");
+    });
+%}
+
+### GOOD GET request to return bids for a specific user with no bids
+GET http://localhost:3000/users/3/bids
+Accept: application/json
+
+> {%
+    client.test("No bids found for user ID 3", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.bids.length === 0, "Expected an empty array of bids for user ID 3");
+    });
+%}
+
+
+### BAD GET request for a non-existent user
+GET http://localhost:3000/users/999/bids
+Accept: application/json
+
+> {%
+    client.test("Non-existent user ID returns 404", function () {
+        client.assert(response.status === 404, "Expected status 404 for non-existent user ID");
+        client.assert(response.body.message === "User not found", "Expected 'User not found' message");
+    });
+%}
 
 ###
+
+### BAD GET request with an invalid user ID (non-numeric)
+GET http://localhost:3000/users/abc/bids
+Accept: application/json
+
+> {%
+    client.test("Invalid user ID returns 400 Bad Request", function () {
+        client.assert(response.status === 400, "Expected status 400 for invalid user ID");
+        client.assert(response.body.message === "Invalid user ID", "Expected 'Invalid user ID' message");
+    });
+%}

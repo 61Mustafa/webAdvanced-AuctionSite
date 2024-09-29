@@ -1,5 +1,77 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD PUT request to update a specific game
+PUT http://localhost:3000/games/1
+Content-Type: application/json
 
-###
+{
+  "title": "New Game Title",
+  "description": "Updated description",
+  "publisher": "Updated Publisher",
+  "category": "Updated Category",
+  "startingPrice": 75,
+  "auctionEndDate": "2025-12-31"
+}
+
+> {%
+    client.test("Game updated successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.message.includes("successfully updated"), "Expected success message");
+        client.assert(response.body.game.title === "New Game Title", "Title should be updated");
+    });
+%}
+
+### BAD PUT request - Missing required fields
+PUT http://localhost:3000/games/1
+Content-Type: application/json
+
+{
+  "title": "New Game Title",
+  "category": "Updated Category",
+  "startingPrice": 75
+}
+
+> {%
+    client.test("Missing fields results in 400 Bad Request", function () {
+        client.assert(response.status === 400, "Response status is not 400");
+        client.assert(response.body.message.includes("Missing required fields"), "Expected missing fields error");
+    });
+%}
+
+### BAD PUT request - Game ID does not exist
+PUT http://localhost:3000/games/999
+Content-Type: application/json
+
+{
+  "title": "New Game Title",
+  "description": "Updated description",
+  "publisher": "Updated Publisher",
+  "category": "Updated Category",
+  "startingPrice": 75,
+  "auctionEndDate": "2025-12-31"
+}
+
+> {%
+    client.test("Game ID not found results in 404", function () {
+        client.assert(response.status === 404, "Response status is not 404");
+        client.assert(response.body.message.includes("not found"), "Expected not found message");
+    });
+%}
+
+### BAD PUT request - Invalid Game ID
+PUT http://localhost:3000/games/abc
+Content-Type: application/json
+
+{
+  "title": "New Game Title",
+  "description": "Updated description",
+  "publisher": "Updated Publisher",
+  "category": "Updated Category",
+  "startingPrice": 75,
+  "auctionEndDate": "2025-12-31"
+}
+
+> {%
+    client.test("Invalid Game ID returns 400 Bad Request", function () {
+        client.assert(response.status === 400, "Response status is not 400");
+        client.assert(response.body.message.includes("Invalid game ID"), "Expected invalid game ID error");
+    });
+%}

@@ -2,26 +2,38 @@
     import GameCard from '../components/GameCard.svelte';
 
     let games = [];
+    export let selectedPrice = "";
+    export let selectedPublisher = "";
+    export let selectedGenre = "";
+    export let searchedGame = "";
 
-    // Haal games op uit de games.json file
+    // Haal de games op van de server
     const fetchGames = async () => {
         try {
-            const res = await fetch('/games.json');
+            let query = [];
+
+            if (searchedGame) query.push(`name=${encodeURIComponent(searchedGame)}`);
+            if (selectedGenre) query.push(`genre=${encodeURIComponent(selectedGenre)}`);
+            if (selectedPublisher) query.push(`publisher=${encodeURIComponent(selectedPublisher)}`);
+
+            if (selectedPrice) query.push(`price=${encodeURIComponent(selectedPrice)}`); // Voeg prijsfilter toe
+
+
+            const queryString = query.length > 0 ? `?${query.join('&')}` : '';
+            const res = await fetch(`http://localhost:3000/games${queryString}`);
             if (!res.ok) {
                 throw new Error("Failed to fetch games");
             }
             games = await res.json();
-            console.log(games);  // Voeg dit toe om te zien of de data correct wordt opgehaald
         } catch (error) {
             console.error("Error fetching games:", error);
         }
     };
 
-    // Haal de games op zodra het component laadt
-    fetchGames();
+    // Elke keer als een filter verandert, haal de games opnieuw op
+    $: fetchGames();
 </script>
 
-<!-- Render de games en geef het image_path door -->
 <div class="games-container">
     {#each games as game}
         <GameCard
@@ -33,6 +45,10 @@
                 image_path={game.image_path}
         />
     {/each}
+
+    {#if games.length === 0}
+        <p>Geen games gevonden.</p>
+    {/if}
 </div>
 
 <style>

@@ -1,5 +1,52 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD POST request to add a new user
+POST http://localhost:3000/users
+Content-Type: application/json
 
-###
+{
+  "username": "blabla612222",
+  "email": "blabla612234",
+  "password": "password6183224"
+}
+
+> {%
+    client.test("User added successfully", function () {
+        // Controleer of de status 201 is
+        client.assert(response.status === 201, "Response status is not 201");
+
+        // Controleer of de message "New user created" is
+        client.assert(response.body.message === "New user created", "Expected 'New user created' message");
+    });
+%}
+
+### BAD POST request - Missing required fields
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "username": "john_doe"
+}
+
+> {%
+    client.test("Missing fields results in 400 Bad Request", function () {
+        client.assert(response.status === 400, "Response status is not 400");
+        client.assert(response.body.message.includes("Missing required fields"), "Expected missing fields error");
+    });
+%}
+
+### BAD POST request - User already exists
+POST http://localhost:3000/users
+Content-Type: application/json
+
+{
+  "userId": 1,
+  "username": "john_doe",
+  "email": "john@example.com",
+  "password": "hashedpassword1"
+}
+
+> {%
+    client.test("User already exists results in 409 Conflict", function () {
+        client.assert(response.status === 409, "Response status is not 409");
+        client.assert(response.body.message.includes("already exists"), "Expected conflict error");
+    });
+%}

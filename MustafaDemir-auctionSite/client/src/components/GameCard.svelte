@@ -4,11 +4,12 @@
     export let publisher;
     export let price;
     export let auction_end_date;
-    export let image_path;  // Ontvang het image_path als prop vanuit Games.svelte
+    export let image_path;
+    const backendUrl = 'MustafaDemir-auctionSite/server/src/data/photos';
 </script>
 
 <div class="game-card">
-    <img src={image_path} alt={name} width="125"/> <!-- Gebruik het doorgegeven image_path -->
+    <img src={`${backendUrl}${image_path}`} alt={name} width="125"/>
     <h2>{name}</h2>
     <p><strong>Prijs:</strong> €{price}</p>
     <p><strong>Publisher:</strong> {publisher}</p>

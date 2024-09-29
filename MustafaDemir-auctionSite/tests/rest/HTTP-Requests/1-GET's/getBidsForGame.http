@@ -1,0 +1,49 @@
+### GOOD GET request to return bids for a specific game (with bids)
+GET http://localhost:3000/games/1/bids
+Accept: application/json
+
+> {%
+    client.test("Bids for game ID 1 retrieved successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(Array.isArray(response.body), "Expected an array of bids");
+        client.assert(response.body.length > 0, "Expected bids to be present for game ID 1");
+    });
+%}
+
+###
+
+### GOOD GET request to return bids for a specific game (no bids)
+GET http://localhost:3000/games/10/bids
+Accept: application/json
+
+> {%
+    client.test("No bids found for game ID 2", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.message === "No bids found for this game", "Expected 'No bids found for this game' message");
+    });
+%}
+
+
+### BAD GET request for a non-existent game (game does not exist)
+GET http://localhost:3000/games/999/bids
+Accept: application/json
+
+> {%
+    client.test("Non-existent game ID returns 404", function () {
+        client.assert(response.status === 404, "Expected 404 for non-existent game");
+        client.assert(response.body.message.includes("does not exist"), "Expected 'Game with ID does not exist' message");
+    });
+%}
+
+###
+
+### BAD GET request with an invalid game ID (non-numeric)
+GET http://localhost:3000/games/abc/bids
+Accept: application/json
+
+> {%
+    client.test("Invalid game ID returns 400 Bad Request", function () {
+        client.assert(response.status === 400, "Expected status 400 for invalid game ID");
+        client.assert(response.body.message === "Invalid game ID", "Expected 'Invalid game ID' message");
+    });
+%}

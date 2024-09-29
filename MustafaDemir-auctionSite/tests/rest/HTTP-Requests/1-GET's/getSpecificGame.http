@@ -1,5 +1,35 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD GET request to return a specific game by valid ID
+GET http://localhost:3000/games/1
+Accept: application/json
+
+> {%
+    client.test("Specific game with ID 1 retrieved successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(typeof response.body === "object", "Expected a game object");
+        client.assert(response.body.gameId === 1, "Expected game ID to be 1");
+    });
+%}
+
+### BAD REQUESTS!!!
+
+### BAD GET request for a non-existent game
+GET http://localhost:3000/games/999
+Accept: application/json
+
+> {%
+    client.test("Game with non-existent ID returns 404", function () {
+        client.assert(response.status === 404, "Expected status 404, but got " + response.status);
+    });
+%}
 
 ###
+
+### BAD GET request with invalid game ID (non-numeric input)
+GET http://localhost:3000/games/abc
+Accept: application/json
+
+> {%
+    client.test("Invalid game ID returns 400 Bad Request", function () {
+        client.assert(response.status === 400, "Expected status 400 for invalid ID, but got " + response.status);
+    });
+%}

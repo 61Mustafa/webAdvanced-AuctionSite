@@ -1,5 +1,74 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD POST request to log in a user
+POST http://localhost:3000/users/login
+Content-Type: application/json
 
-###
+{
+  "username": "john_doe",
+  "password": "hashedpassword1"
+}
+
+> {%
+    client.test("User logged in successfully", function () {
+        // Controleer of de status 200 is
+        client.assert(response.status === 200, "Response status is not 200");
+
+        // Controleer of de message exact "Login successful" is
+        client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
+
+        // Controleer of de gebruiker in de response de juiste username heeft
+        client.assert(response.body.user.username === "john_doe", "Expected username to be 'john_doe'");
+
+        // Controleer of er een token wordt teruggestuurd
+        client.assert(response.body.token, "Expected a token in the response");
+    });
+%}
+
+### BAD POST request - Missing required fields
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "username": "john_doe"
+}
+
+> {%
+    client.test("Missing fields results in 400 Bad Request", function () {
+        // Controleer of de status 400 is
+        client.assert(response.status === 400, "Response status is not 400");
+
+        // Controleer of de message exact "Missing username or password" is
+        client.assert(response.body.message === "Missing username or password", "Expected missing fields error message");
+    });
+%}
+
+### BAD POST request - Incorrect password
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "username": "john_doe",
+  "password": "wrongpassword"
+}
+
+> {%
+    client.test("Incorrect password results in 401 Unauthorized", function () {
+        client.assert(response.status === 401, "Response status is not 401");
+        client.assert(response.body.message.includes("Incorrect password"), "Expected unauthorized error");
+    });
+%}
+
+### BAD POST request - User not found
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "username": "unknown_user",
+  "password": "somepassword"
+}
+
+> {%
+    client.test("User not found results in 404", function () {
+        client.assert(response.status === 404, "Response status is not 404");
+        client.assert(response.body.message.includes("User not found"), "Expected not found error");
+    });
+%}

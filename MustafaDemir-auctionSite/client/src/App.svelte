@@ -1,5 +1,5 @@
 <script>
-    import Main from './pages/main.svelte'; // Zorg ervoor dat main.svelte wordt geïmporteerd
+    import Main from './pages/Main.svelte'; // Zorg ervoor dat Main.svelte wordt geïmporteerd
 </script>
 
 <!-- Render de main pagina -->

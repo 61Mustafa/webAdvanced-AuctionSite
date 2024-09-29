@@ -1,5 +1,32 @@
-### GET request to example server
-GET https://examples.http-client.intellij.net/get
-    ?generated-in=WebStorm
+### GOOD DELETE request to remove a specific game
+DELETE http://localhost:3000/games/1
+Content-Type: application/json
 
-###
+> {%
+    client.test("Game deleted successfully", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.message.includes("successfully deleted"), "Expected success message");
+    });
+%}
+
+### BAD DELETE request - Game ID does not exist
+DELETE http://localhost:3000/games/999
+Content-Type: application/json
+
+> {%
+    client.test("Game ID not found results in 404", function () {
+        client.assert(response.status === 404, "Response status is not 404");
+        client.assert(response.body.message.includes("not found"), "Expected not found message");
+    });
+%}
+
+### BAD DELETE request - Invalid Game ID
+DELETE http://localhost:3000/games/abc
+Content-Type: application/json
+
+> {%
+    client.test("Invalid Game ID returns 400 Bad Request", function () {
+        client.assert(response.status === 400, "Response status is not 400");
+        client.assert(response.body.message.includes("Invalid game ID"), "Expected invalid game ID error");
+    });
+%}
