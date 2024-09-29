@@ -1,0 +1,108 @@
+### GOOD GET request to filter games by title (correcte titel)
+GET http://localhost:3000/games?title=Resident%20Evil
+Content-Type: application/json
+
+> {%
+    client.test("Filter games by title works and returns games", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length !== 0, "Expected a filled array");
+    });
+%}
+
+### GOOD GET request to filter games by category (correcte categorie)
+GET http://localhost:3000/games?category=Horror
+Content-Type: application/json
+
+> {%
+    client.test("Filter games by category works and returns games", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length !== 0, "Expected a filled array");
+    });
+%}
+
+### GOOD GET request to filter games by publisher (correcte uitgever)
+GET http://localhost:3000/games?publisher=Sony
+Content-Type: application/json
+
+> {%
+    client.test("Filter games by publisher works and returns games", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length !== 0, "Expected a filled array");
+    });
+%}
+
+### GOOD GET request to filter games by price up to 60 euro
+GET http://localhost:3000/games?startPrice=60
+Content-Type: application/json
+
+> {%
+    client.test("Filter games by price up to 60 works and returns games", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length !== 0, "Expected a filled array");
+    });
+%}
+
+### GOOD GET request to filter games by title and publisher
+GET http://localhost:3000/games?title=Resident%20Evil&publisher=Capcom
+Content-Type: application/json
+
+> {%
+    client.test("Filter games by title and publisher works and returns games", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length !== 0, "Expected a filled array");
+    });
+%}
+
+### GOOD GET request to filter games by category and startPrice
+GET http://localhost:3000/games?category=Horror&startPrice=70
+Content-Type: application/json
+
+> {%
+    client.test("Filter games by category and price works and returns games", function () {
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.length !== 0, "Expected a filled array");
+    });
+%}
+
+###
+// BAD WEATHER TESTS
+
+### BAD GET request to filter games by non-existent title
+GET http://localhost:3000/games?title=NonExistingTitle
+Content-Type: application/json
+
+> {%
+    client.test("Non-existent title returns 404", function () {
+        client.assert(response.status === 404, "Expected status 404, but got " + response.status);
+    });
+%}
+
+### BAD GET request to filter games by non-existent category
+GET http://localhost:3000/games?category=InvalidCategory
+Content-Type: application/json
+
+> {%
+    client.test("Non-existent category returns 404", function () {
+        client.assert(response.status === 404, "Expected status 404, but got " + response.status);
+    });
+%}
+
+### BAD GET request to filter games by non-existent publisher
+GET http://localhost:3000/games?publisher=UnknownPublisher
+Content-Type: application/json
+
+> {%
+    client.test("Non-existent publisher returns 404", function () {
+        client.assert(response.status === 404, "Expected status 404, but got " + response.status);
+    });
+%}
+
+### BAD GET request to filter games with multiple invalid filters (title and category)
+GET http://localhost:3000/games?title=NonExistingTitle&category=InvalidCategory
+Content-Type: application/json
+
+> {%
+    client.test("Invalid title and category returns 404", function () {
+        client.assert(response.status === 404, "Expected status 404, but got " + response.status);
+    });
+%}

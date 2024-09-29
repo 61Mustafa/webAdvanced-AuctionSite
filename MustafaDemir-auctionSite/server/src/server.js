@@ -1,112 +1,44 @@
 import express from 'express';
 import path from 'path';
 import {fileURLToPath} from 'url';
-import bodyParser from 'body-parser'; // Gebruik import i.p.v. require
+import bodyParser from 'body-parser';
+import fs from 'fs';
 
 const app = express();
 const port = 3000;
 
+// Gebruik body-parser om JSON request bodies te parsen
 app.use(bodyParser.json());
 
+// Bepaal __dirname voor ES-modules
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-
-// Zorg dat de map 'public' toegankelijk is
-// Middleware to parse JSON request bodies
-
-
-// Zorg ervoor dat je verwijst naar de juiste public map
+// Statische bestanden in de map 'public'
 const publicPath = path.join(__dirname, '../../client/public');
 app.use(express.static(publicPath));
 
-// Optioneel: je kunt een specifieke route maken om de JSON te serveren
+// Zorg ervoor dat de map 'data' toegankelijk is voor statische bestanden
+app.use('/server/data', express.static(path.join(__dirname, 'src/data')));
+
+// Laad games.json in
+const gamesFilePath = path.join(__dirname, 'src/data/games.json');
+let games = JSON.parse(fs.readFileSync(gamesFilePath, 'utf-8'));
+
+// Optioneel: API-route om games op te halen
 app.get('/games', (req, res) => {
-  res.sendFile(path.join(publicPath, 'games.json'));
+  res.json(games);
 });
 
+// Optioneel: API-route om games op te halen
+app.get('/games', (req, res) => {
+  res.json(games);
+});
 
-// // In-memory database
-// let games = [
-//   {
-//     gameID: 1,
-//     naam: 'Fifa24',
-//     genre: 'Sport',
-//     uitgeverij: 'EA',
-//   },
-//   {
-//     gameID: 2,
-//     naam: 'Call of Duty',
-//     genre: 'Action',
-//     uitgeverij: 'Activision',
-//   },
-//   {
-//     gameID: 3,
-//     naam: 'PES',
-//     genre: 'sport',
-//     uitgeverij: 'Konami',
-//   },
-// ];
-//
-// // In-memory database met biedingen
-// let bids = [
-//   {
-//     bidId: 1,
-//     gameID: 1,  // Fifa24
-//     bieder: 'john_doe',
-//     bedrag: 50
-//   },
-//   {
-//     bidId: 2,
-//     gameID: 2,  // Call of Duty
-//     bieder: 'jane_smith',
-//     bedrag: 70
-//   },
-//   {
-//     bidId: 3,
-//     gameID: 1,  // Fifa24
-//     bieder: 'alice_jones',
-//     bedrag: 55
-//   }
-// ];
-//
-// const users = [
-//   {
-//     username: 'mustafa',
-//     password: 'password123',  // In werkelijkheid zou je wachtwoorden versleutelen
-//   },
-//   {
-//     username: 'admin',
-//     password: 'admin123',
-//   },
-// ];
-
-//GET REQUESTS -----------------------------------------------------------------------------------------
-
-//get all games - 1
-// app.get('/games', (req, res) => {
-//   const naam = req.query.naam;
-//   const genre = req.query.genre;
-//   const uitgeverij = req.query.uitgeverij;
-//
-//   const filteredGames = games.filter(game => {
-//     let isMatch = true;
-//
-//     if (naam) {
-//       isMatch = isMatch && game.naam.toLowerCase() === naam.toLowerCase();
-//     }
-//     if (genre) {
-//       isMatch = isMatch && game.genre.toLowerCase() === genre.toLowerCase();
-//     }
-//     if (uitgeverij) {
-//       isMatch = isMatch && game.uitgeverij.toLowerCase() === uitgeverij.toLowerCase();
-//     }
-//
-//     return isMatch;
-//   });
-//   res.json(filteredGames);
-// });
-
+// Optioneel: je kunt een specifieke route maken om de JSON te serveren
+app.get('/games', (req, res) => {
+  res.json(games);
+});
 //get specific game - 2
 app.get('/games/:id', (req, res) => {
   const gameId = parseInt(req.params.id);
