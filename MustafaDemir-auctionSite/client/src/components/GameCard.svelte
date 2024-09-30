@@ -5,11 +5,13 @@
     export let price;
     export let auction_end_date;
     export let image_path;
-    const backendUrl = 'MustafaDemir-auctionSite/server/src/data/photos';
+
+    const backendUrl = 'http://localhost:3000';
+    const defaultImage = 'http://localhost:3000/photos/Gran_Turismo_7_cover_art.jpg'; // Define a fallback image
 </script>
 
 <div class="game-card">
-    <img src={`${backendUrl}${image_path}`} alt={name} width="125"/>
+    <img src={image_path ? `${backendUrl}${image_path}` : defaultImage} alt={name} width="125"/>
     <h2>{name}</h2>
     <p><strong>Prijs:</strong> €{price}</p>
     <p><strong>Publisher:</strong> {publisher}</p>

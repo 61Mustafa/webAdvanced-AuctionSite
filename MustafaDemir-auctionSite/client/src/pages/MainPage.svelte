@@ -1,5 +1,7 @@
 <script>
-    import Games from '../components/Games.svelte';
+    import Games from '../components/GamesList.svelte';
+
+    import { Link } from "svelte-routing";
 
     let selectedPrice = "";
     let selectedPublisher = "";
@@ -13,7 +15,7 @@
             <h1>GameBidz</h1>
         </div>
         <div class="login">
-            <a href="/login">Login</a>
+            <Link to="/login">Login</Link>
         </div>
     </header>
 

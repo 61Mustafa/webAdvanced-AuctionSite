@@ -7,17 +7,16 @@
     export let selectedGenre = "";
     export let searchedGame = "";
 
-    // Haal de games op van de server
+    // Fetch the games from the server
     const fetchGames = async () => {
         try {
             let query = [];
 
-            if (searchedGame) query.push(`name=${encodeURIComponent(searchedGame)}`);
-            if (selectedGenre) query.push(`genre=${encodeURIComponent(selectedGenre)}`);
+            if (searchedGame) query.push(`title=${encodeURIComponent(searchedGame)}`);
+            if (selectedGenre) query.push(`category=${encodeURIComponent(selectedGenre)}`);
             if (selectedPublisher) query.push(`publisher=${encodeURIComponent(selectedPublisher)}`);
 
-            if (selectedPrice) query.push(`price=${encodeURIComponent(selectedPrice)}`); // Voeg prijsfilter toe
-
+            if (selectedPrice) query.push(`startPrice=${encodeURIComponent(selectedPrice)}`); // Add price filter
 
             const queryString = query.length > 0 ? `?${query.join('&')}` : '';
             const res = await fetch(`http://localhost:3000/games${queryString}`);
@@ -30,19 +29,19 @@
         }
     };
 
-    // Elke keer als een filter verandert, haal de games opnieuw op
+    // Re-fetch the games whenever any filter changes
     $: fetchGames();
 </script>
 
 <div class="games-container">
     {#each games as game}
         <GameCard
-                name={game.name}
-                genre={game.genre}
-                publisher={game.publisher}
-                price={game.price}
-                auction_end_date={game.auction_end_date}
-                image_path={game.image_path}
+            name={game.title}
+            genre={game.category}
+            publisher={game.publisher}
+            price={game.startingPrice}
+            auction_end_date={game.auctionEndDate}
+            image_path={game.image_path}
         />
     {/each}
 

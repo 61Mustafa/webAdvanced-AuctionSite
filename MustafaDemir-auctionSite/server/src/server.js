@@ -2,6 +2,7 @@ import express from "express";
 import gameRouter from "./routes/game-router.js";
 import bidRouter from "./routes/bid-router.js";
 import userRouter from "./routes/user-router.js";
+import cors from 'cors';
 import * as path from "node:path";
 import {fileURLToPath} from 'url';
 
@@ -10,6 +11,10 @@ const app = express();
 const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
+
+app.use(cors({
+    origin: 'http://localhost:5173'  // Allow requests from your frontend origin
+}));
 
 app.use(express.json());
 

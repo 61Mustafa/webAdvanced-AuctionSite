@@ -6,6 +6,7 @@
         <entryData>
           <resourceRoots>
             <path value="file://$PROJECT_DIR$/MustafaDemir-auctionSite/client/public/Photos" />
+            <path value="file://$PROJECT_DIR$/MustafaDemir-auctionSite/server/src/data" />
           </resourceRoots>
         </entryData>
       </entry>
