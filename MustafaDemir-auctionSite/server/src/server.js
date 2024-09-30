@@ -16,7 +16,6 @@ app.use(express.json());
 app.use('/photos', express.static(path.join(__dirname, 'data', 'photos')));
 
 app.use('/games', gameRouter, bidRouter);
-//app.use('/bids', bidRouter);
 app.use('/users', userRouter);
 
 app.use(function (err, req, res, next) {

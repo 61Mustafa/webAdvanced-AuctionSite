@@ -11,6 +11,6 @@ const router = express.Router();
 router.get("/", getAllUsers);
 router.get("/:userId/bids", getAllBidsFromUser);
 router.post("/", addUser);
-router.post("/login", loginUser);  // Voeg de login route toe
+router.post("/login", loginUser);
 
 export default router;
