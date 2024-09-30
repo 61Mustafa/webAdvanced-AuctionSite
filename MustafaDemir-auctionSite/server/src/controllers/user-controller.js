@@ -2,73 +2,79 @@ import {games, users} from '../data/data.js';
 import statusCodes, {StatusCodes} from "http-status-codes";
 import jwt from "jsonwebtoken";
 import bcrypt from "bcryptjs";
-import {validateNumber} from "./bid-controller.js";
+import {validateInput} from "./bid-controller.js";
 
-// Gedefinieerde JWT_SECRET
+// My Unique and never foundable password.
 export const JWT_SECRET = 'BizeHerYerTrabzonGardasss61';
 
+// GET - all information of users
 export function getAllUsers(req, res) {
+
+    // get all users.
     const allUsers = users.map(user => {
-        const {bids, ...userData} = user;  // Verwijder password en bids
+        const {...userData} = user;
         return userData;
     });
     return res.status(StatusCodes.OK).json({users: allUsers});
 }
 
+// GET - all bids from a specific user.
 export function getAllBidsFromUser(req, res) {
-    const userId = Number(req.params.userId);  // Zorg ervoor dat userId een nummer is
+    const userId = Number(req.params.userId);
 
-    // Controleer of het een geldig nummer is
-    if (!validateNumber(res, userId, StatusCodes.BAD_REQUEST, "Invalid user ID")) return;
+    // Check if userID is a number.
+    if (!validateInput(res, userId, StatusCodes.BAD_REQUEST, "Invalid user ID")) return;
 
-    const user = searchUser(userId, res, statusCodes.NOT_FOUND, "User not found");
+    // Search the user and return if it exists.
+    const user = searchAndReturnUser(userId, res, statusCodes.NOT_FOUND, "User not found");
+    // If user doesn't exist, stop and return nothing.
     if (!user) return;
 
-    // Haal de biedingen van de gebruiker op
     const userBids = user.bids;
 
-    // Retourneer de biedingen met een 200 OK status
     return res.status(StatusCodes.OK).json({bids: userBids});
 }
 
 //POSTS
+
+// POST - new user
 export function addUser(req, res) {
     const {username, email, password} = req.body;
 
-    // Controleer of alle verplichte velden aanwezig zijn (zonder userId)
+    // Check if all fields are filled.
     if (!username || !email || !password) {
         console.log("Missing required fields:", {username, email, password});
         return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
     }
 
-    // Controleer of de gebruiker al bestaat op basis van email
+    // Check if user already exist.
     const existingUser = users.find(user => user.email.toLowerCase() === email.toLowerCase());
     if (existingUser) {
         console.log("User already exists:", existingUser);
         return res.status(StatusCodes.CONFLICT).json({message: 'User already exists'});
     }
 
-    // Bepaal het nieuwe userId: hoogste bestaande userId + 1
+    // Determine the new userId: highest existing userId + 1
     const newUserId = users.length > 0 ? Math.max(...users.map(user => user.userId)) + 1 : 1;
 
-    // Has het wachtwoord
+    // Hash the password
     try {
         console.log("Hashing password...");
-        const hashedPassword = bcrypt.hashSync(password, 12);  // Hash het wachtwoord
+        const hashedPassword = bcrypt.hashSync(password, 12);
         console.log("Password hashed successfully");
 
-        // Voeg de nieuwe gebruiker toe aan de lijst
+        // Add user to the user list.
         const newUser = {
-            userId: newUserId,  // Automatisch gegenereerd userId
+            userId: newUserId,
             username,
             email,
-            password: hashedPassword,  // Opslaan als gehashed wachtwoord
+            password: hashedPassword,
             role: 'user',
             bids: []
         };
         users.push(newUser);
 
-        // Genereer JWT-token voor de gebruiker
+        // Generate JWT-Token for the user.
         console.log("Generating JWT token...");
         const token = jwt.sign({id: newUser.userId, email: newUser.email}, JWT_SECRET, {expiresIn: '1d'});
         console.log("JWT token generated:", token);
@@ -80,37 +86,35 @@ export function addUser(req, res) {
     }
 }
 
-// POST request voor gebruiker login
+// POST - login user
 export function loginUser(req, res) {
     const {username, password} = req.body;
 
-    // Controleer of gebruikersnaam en wachtwoord zijn meegegeven
+    // Check if all fields are filled.
     if (!username || !password) {
         return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing username or password'});
     }
 
-    // Zoek naar de gebruiker
+    // Check if the user exist.
     const user = users.find(user => user.username === username);
-
-    // Controleer of de gebruiker bestaat
     if (!user) {
         return res.status(StatusCodes.NOT_FOUND).json({message: 'User not found'});
     }
 
-    // Vergelijk het ingevoerde wachtwoord met het gehashte wachtwoord
+    // Compare the inputted password and the hashed password.
     const passwordMatch = bcrypt.compareSync(password, user.password);
     if (!passwordMatch) {
         return res.status(StatusCodes.UNAUTHORIZED).json({message: 'Incorrect password'});
     }
 
-    // Genereer JWT-token voor de ingelogde gebruiker met de constante JWT_SECRET
+    // Generate a JWT-token for the user that logs in with the JWT-SECRET.
     const token = jwt.sign({id: user.userId, email: user.email}, JWT_SECRET, {expiresIn: '1d'});
 
     return res.status(StatusCodes.OK).json({message: 'Login successful', user, token});
 }
 
-
-export function searchUser(userID, res, statusCode, errorMessage) {
+// Search to the user and return it if it exists.
+export function searchAndReturnUser(userID, res, statusCode, errorMessage) {
     const user = users.find(user => user.userId === userID);
     if (!user) {
         res.status(statusCode).json({message: errorMessage});

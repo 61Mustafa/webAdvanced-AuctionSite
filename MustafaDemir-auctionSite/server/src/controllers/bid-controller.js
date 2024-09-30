@@ -1,51 +1,52 @@
 import {games} from '../data/data.js';
 import statusCodes, {StatusCodes} from 'http-status-codes';
 
-// GET - get alle biedingen van een specifieke game
+// GET - all bids from a specific game
 export function getBidsForGame(req, res) {
     const gameId = Number(req.params.id);
 
-    // Gebruik de validateNumber helper om te controleren of gameId geldig is
-    if (!validateNumber(res, gameId, StatusCodes.BAD_REQUEST, 'Invalid game ID')) return;
+    // Check if gameID is a number.
+    if (!validateInput(res, gameId, StatusCodes.BAD_REQUEST, 'Invalid game ID')) return;
 
-    // Zoek naar de game met de helper-functie searchGame
-    const game = searchGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} does not exist!`);
-    if (!game) return;  // Stop als de game niet gevonden wordt
+    // Search the game and return if it exists.
+    const game = searchAndReturnGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} does not exist!`);
+    // If game doesn't exist, stop and return nothing.
+    if (!game) return;
 
-    // Als de game bestaat, retourneer de lijst.
-    // Het maakt niet uit of de lijst leeg is of niet.
+    // Check if there are games founded and if founded, return it.
     if (game.bids && game.bids.length > 0) {
-        return res.status(StatusCodes.OK).json(game.bids);  // 200
+        return res.status(StatusCodes.OK).json(game.bids);
     } else {
-        // Als er geen biedingen zijn, retourneer een melding
-        return res.status(StatusCodes.OK).json({message: 'No bids found for this game'});  // 200
+        return res.status(StatusCodes.OK).json({message: 'No bids found for this game'});
     }
 }
 
-// request om een bod toe te voegen aan een specifieke game
+// POST - new bid for a specific game
 export function addBid(req, res) {
     const gameId = Number(req.params.id);
     const {bidId, bidAmount, bidTime, userId} = req.body;
 
-    if (!validateNumber(res, gameId, StatusCodes.BAD_REQUEST, 'Invalid game ID')) return;
-    // Zoek naar de game
-    const game = searchGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} not found`);
-    if (!game) return;  // Stop als de game niet gevonden wordt
+    // Check if gameID is a number.
+    if (!validateInput(res, gameId, StatusCodes.BAD_REQUEST, 'Invalid game ID')) return;
+    // Search the game and return if it exists.
+    const game = searchAndReturnGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} not found`);
+    // If game doesn't exist, stop and return nothing.
+    if (!game) return;
 
-    // Controleer of alle verplichte velden aanwezig zijn
+    // Check if all fields are filled.
     if (!bidId || !bidAmount || !bidTime || !userId) {
         return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
     }
 
-    // Voeg het bod toe aan de game
+    // Add bid to the game
     const newBid = {bidId, bidAmount, bidTime, userId, gameId};
     game.bids.push(newBid);
 
     return res.status(StatusCodes.CREATED).json({message: 'Bid added successfully', bid: newBid});
 }
 
-//Validate Number
-export function validateNumber(res, value, statusCode, errorMessage) {
+//Validate input of the user
+export function validateInput(res, value, statusCode, errorMessage) {
     if (isNaN(value)) {
         res.status(statusCode).json({message: errorMessage});
         return false;
@@ -54,7 +55,7 @@ export function validateNumber(res, value, statusCode, errorMessage) {
 }
 
 //SearchToGame
-export function searchGame(gameID, res, statusCode, errorMessage) {
+export function searchAndReturnGame(gameID, res, statusCode, errorMessage) {
     const game = games.find(game => game.gameId === gameID);
     if (!game) {
         res.status(statusCode).json({message: errorMessage});
