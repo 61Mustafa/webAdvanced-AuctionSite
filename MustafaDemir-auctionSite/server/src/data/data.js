@@ -69,7 +69,7 @@ export const games = [
     },
     {
         gameId: 6,
-        title: "Ghost of Tsushima: Director's Cut",
+        title: "Ghost of Tsushima",
         description: "Open-world adventure set in feudal Japan.",
         publisher: "Sony",
         category: "Adventure",
@@ -113,7 +113,7 @@ export const games = [
     },
     {
         gameId: 10,
-        title: "Call of Duty: Modern Warfare II",
+        title: "Call of Duty: MW II",
         description: "First-person shooter with modern warfare setting.",
         publisher: "Activision",
         category: "Shooter",

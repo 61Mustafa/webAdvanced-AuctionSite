@@ -8,7 +8,7 @@ import {searchAndReturnGame, validateInput} from "./bid-controller.js";
 export function getAllGames(req, res) {
     const {title, category, publisher, startPrice, limit} = req.query;
 
-    // Filter and search based on query parameters .
+    // Filter en zoek op basis van query parameters
     let filteredGames = games.filter(game =>
         (!title || game.title.toLowerCase().includes(title.toLowerCase())) &&
         (!category || game.category.toLowerCase().includes(category.toLowerCase())) &&
@@ -18,9 +18,10 @@ export function getAllGames(req, res) {
 
     // If the user add a limit to see max amount of games, limit amount.
     if (limit) {
-        const maxAmount = parseInt(limit);
+        const maxAmount = parseInt(limit, 10);
         filteredGames = filteredGames.slice(0, maxAmount);
     }
+
     // Check if there are games founded and if founded, return it.
     if (filteredGames.length > 0) {
         return res.status(statusCodes.OK).json(filteredGames);
@@ -28,6 +29,8 @@ export function getAllGames(req, res) {
         return res.status(statusCodes.NOT_FOUND).json({message: 'Geen game(s) gevonden'});
     }
 }
+
+
 
 // GET - specific game
 export function getSpecificGame(req, res) {

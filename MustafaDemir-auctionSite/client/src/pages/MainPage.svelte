@@ -1,141 +1,64 @@
 <script>
+    import {Link} from 'svelte-routing';
     import Games from '../components/GamesList.svelte';
-
-    import { Link } from "svelte-routing";
+    import FilterSection from '../components/FilterSection.svelte';
+    import SearchBar from '../components/SearchBar.svelte';
 
     let selectedPrice = "";
     let selectedPublisher = "";
     let selectedGenre = "";
     let searchedGame = "";
+    let games = [];
+
+    const fetchGames = async () => {
+        try {
+            let query = [];
+
+            if (searchedGame) query.push(`title=${encodeURIComponent(searchedGame)}`);
+            if (selectedGenre) query.push(`category=${encodeURIComponent(selectedGenre)}`);
+            if (selectedPublisher) query.push(`publisher=${encodeURIComponent(selectedPublisher)}`);
+            if (selectedPrice) query.push(`startPrice=${encodeURIComponent(selectedPrice)}`);
+
+            const queryString = query.length > 0 ? `?${query.join('&')}` : '';
+            const res = await fetch(`http://localhost:3000/games${queryString}`);
+
+            if (!res.ok) {
+                throw new Error('Failed to fetch games');
+            }
+
+            const fetchedGames = await res.json();
+            games = fetchedGames.length > 0 ? fetchedGames : [];
+        } catch (error) {
+            console.error('Error fetching games:', error);
+            games = [];
+        }
+    };
+
+    const handleSearch = () => {
+        fetchGames();
+    };
+
+    $: if (selectedPrice || selectedPublisher || selectedGenre || searchedGame) {
+        fetchGames();
+    }
+    fetchGames();
 </script>
 
-<div class="container">
-    <header>
-        <div class="title">
-            <h1>GameBidz</h1>
-        </div>
-        <div class="login">
-            <Link to="/login">Login</Link>
-        </div>
+<div class="container w-full max-w-[1600px] mx-auto">
+    <header class="flex justify-between items-center p-5">
+        <h1 class="text-4xl font-extrabold text-center text-gray-900 tracking-tight">GAMEBIDZ</h1>
+        <SearchBar bind:searchedGame={searchedGame} on:search={handleSearch}/>
+        <Link to="/login"
+              class="text-md text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out">
+            Login
+        </Link>
     </header>
 
-    <div class="search-bar">
-        <input type="text" placeholder="Search" bind:value={searchedGame}/>
-    </div>
-
-    <div class="main-content">
-        <aside class="filters">
-            <h3>Filters</h3>
-
-            <!-- Prijs Dropdown -->
-            <label class="filter-label">Prijs
-                <select bind:value={selectedPrice}>
-                    <option value="">Games die minder kosten dan</option>
-                    <option value="50">50 EUR</option>
-                    <option value="60">60 EUR</option>
-                    <option value="70">70 EUR</option>
-                </select>
-            </label>
-
-            <!-- Uitgeverij Dropdown -->
-            <label class="filter-label">Uitgeverij
-                <select bind:value={selectedPublisher}>
-                    <option value="">Kies een uitgeverij</option>
-                    <option value="Sony">Sony</option>
-                    <option value="Activision">Activision</option>
-                    <option value="Electronic Arts">Electronic Arts</option>
-                    <option value="Capcom">Capcom</option>
-                    <option value="Square Enix">Square Enix</option>
-                </select>
-            </label>
-
-            <!-- Genre Dropdown -->
-            <label class="filter-label">Genre
-                <select bind:value={selectedGenre}>
-                    <option value="">Kies een genre</option>
-                    <option value="Horror">Horror</option>
-                    <option value="Shooter">Shooter</option>
-                    <option value="RPG">RPG</option>
-                    <option value="Racing">Racing</option>
-                    <option value="Adventure">Adventure</option>
-                    <option value="Platformer">Platformer</option>
-                    <option value="Sports">Sports</option>
-                </select>
-            </label>
-        </aside>
-
-        <section class="items-grid">
-            <!-- Geef de filterwaarden door aan de Games component -->
-            <Games {selectedPrice} {selectedPublisher} {selectedGenre} {searchedGame}/>
+    <div class="main-content flex">
+        <FilterSection bind:selectedPrice={selectedPrice} bind:selectedPublisher={selectedPublisher}
+                       bind:selectedGenre={selectedGenre}/>
+        <section class="items-flex flex flex-col md:flex-row lg:flex-row gap-5 p-5 w-3/4">
+            <Games {games}/>
         </section>
     </div>
 </div>
-<style>
-    .container {
-        width: 100%;
-        max-width: 1600px;
-        margin: 0 auto;
-    }
-
-    header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 20px;
-    }
-
-    .title h1 {
-        margin: 0;
-        font-size: 2.5em;
-    }
-
-    .login {
-        margin-left: auto;
-    }
-
-    .login a {
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .search-bar {
-        margin: 20px 0;
-        text-align: center;
-    }
-
-    .search-bar input {
-        width: 50%;
-        padding: 10px;
-        font-size: 1.2em;
-    }
-
-    .main-content {
-        display: flex;
-    }
-
-    .filters {
-        display: flex;
-        flex-direction: column;
-        padding: 30px;
-        gap: 10px;
-    }
-
-    .filter-label {
-        display: flex;
-        flex-direction: column;
-    }
-
-    .filter-label select {
-        padding: 8px;
-        font-size: 1em;
-        margin-top: 5px;
-    }
-
-    .items-grid {
-        flex-basis: 80%;
-        display: flex;
-        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-        gap: 20px;
-        padding: 20px;
-    }
-</style>
