@@ -87,18 +87,19 @@ export function addUser(req, res) {
 }
 
 // POST - login user
+// POST - login user
 export function loginUser(req, res) {
-    const {username, password} = req.body;
+    const {email, password} = req.body;
 
     // Check if all fields are filled.
-    if (!username || !password) {
+    if (!email || !password) {
         return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing username or password'});
     }
 
-    // Check if the user exist.
-    const user = users.find(user => user.username === username);
+    // Check if the user exists.
+    const user = users.find(user => user.email === email);
     if (!user) {
-        return res.status(StatusCodes.NOT_FOUND).json({message: 'User not found'});
+        return res.status(StatusCodes.NOT_FOUND).json({message: 'The password doesnt match or the user does not exist!'});
     }
 
     // Compare the inputted password and the hashed password.
@@ -108,17 +109,16 @@ export function loginUser(req, res) {
     }
 
     // Generate a JWT-token for the user that logs in with the JWT-SECRET.
-    const token = jwt.sign({id: user.userId, email: user.email}, JWT_SECRET, {expiresIn: '1d'});
+    const token = jwt.sign({id: user.userId, email: user.email, role: user.role}, JWT_SECRET, {expiresIn: '1d'});
 
-    return res.status(StatusCodes.OK).json({message: 'Login successful', user, token});
-}
-
-// Search to the user and return it if it exists.
-export function searchAndReturnUser(userID, res, statusCode, errorMessage) {
-    const user = users.find(user => user.userId === userID);
-    if (!user) {
-        res.status(statusCode).json({message: errorMessage});
-        return null;
+    // Redirect based on the user's role
+    if (user.role === 'admin') {
+        return res.status(StatusCodes.OK).json({
+            message: 'Login successful',
+            token,
+        });
+    } else {
+        return res.status(StatusCodes.OK).json(
+            {message: 'Login successful', token});
     }
-    return user;
 }

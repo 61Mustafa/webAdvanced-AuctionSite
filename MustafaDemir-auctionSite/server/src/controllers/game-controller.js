@@ -36,17 +36,17 @@ export function getAllGames(req, res) {
 export function getSpecificGame(req, res) {
     const gameId = Number(req.params.id);
 
-    // Check if gameID is a number.
     if (!validateInput(res, gameId, StatusCodes.BAD_REQUEST, 'Invalid game ID')) return;
 
-    // Search the game and return if it exists.
     const game = searchAndReturnGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} not found`);
-    // If game doesn't exist, stop and return nothing.
+
     if (!game) return;
+
+    // Voeg een log toe om te controleren of het game-object 'edition' bevat
+    console.log('Game data returned from API:', game);
 
     return res.status(StatusCodes.OK).json(game);
 }
-
 // ALL POSTS
 
 // POST - game

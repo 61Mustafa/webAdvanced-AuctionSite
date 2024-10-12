@@ -1,7 +1,5 @@
 <script>
-    import GameCard from '../components/GameCard.svelte';
-    import {Link} from "svelte-routing";
-
+    import GameCard from './GameCard.svelte';
     export let games = [];
 </script>
 
@@ -10,6 +8,7 @@
     {#if games.length > 0}
         {#each games as game}
                 <GameCard
+                        id={game.gameId}
                         name={game.title}
                         genre={game.category}
                         publisher={game.publisher}

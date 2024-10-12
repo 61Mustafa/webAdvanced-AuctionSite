@@ -1,64 +1,101 @@
 <script>
-    import {Link} from 'svelte-routing';
-    import Games from '../components/GamesList.svelte';
-    import FilterSection from '../components/FilterSection.svelte';
-    import SearchBar from '../components/SearchBar.svelte';
+    import {onMount} from 'svelte';
+    import Games from '../components/mainPageC\'en/GamesList.svelte';
+    import FilterSection from '../components/mainPageC\'en/FilterSection.svelte';
+    import SearchBar from '../components/commonComponents/SearchBar.svelte';
+    import UserDropdown from "../components/UserDropdown.svelte";
+    import page from 'page';
 
     let selectedPrice = "";
     let selectedPublisher = "";
     let selectedGenre = "";
     let searchedGame = "";
-    let games = [];
+    let gamesPromise;
+    let loggedInUser = null;
 
     const fetchGames = async () => {
-        try {
-            let query = [];
+        let query = [];
+        if (searchedGame) query.push(`title=${encodeURIComponent(searchedGame)}`);
+        if (selectedGenre) query.push(`category=${encodeURIComponent(selectedGenre)}`);
+        if (selectedPublisher) query.push(`publisher=${encodeURIComponent(selectedPublisher)}`);
+        if (selectedPrice) query.push(`startPrice=${encodeURIComponent(selectedPrice)}`);
 
-            if (searchedGame) query.push(`title=${encodeURIComponent(searchedGame)}`);
-            if (selectedGenre) query.push(`category=${encodeURIComponent(selectedGenre)}`);
-            if (selectedPublisher) query.push(`publisher=${encodeURIComponent(selectedPublisher)}`);
-            if (selectedPrice) query.push(`startPrice=${encodeURIComponent(selectedPrice)}`);
+        const queryString = query.length > 0 ? `?${query.join('&')}` : '';
+        console.log('Fetching games from URL: ', `http://localhost:3000/games${queryString}`);
 
-            const queryString = query.length > 0 ? `?${query.join('&')}` : '';
-            const res = await fetch(`http://localhost:3000/games${queryString}`);
-
-            if (!res.ok) {
-                throw new Error('Failed to fetch games');
+        const response = await fetch(`http://localhost:3000/games${queryString}`, {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
             }
+        });
 
-            const fetchedGames = await res.json();
-            games = fetchedGames.length > 0 ? fetchedGames : [];
-        } catch (error) {
-            console.error('Error fetching games:', error);
-            games = [];
+        if (!response.ok) {
+            const result = await response.json();
+            console.log('Error response:', result);
+            throw new Error(result.message || 'Failed to fetch games');
         }
+
+        const gamesData = await response.json();
+        console.log('Games data:', gamesData);
+        return gamesData;
     };
+
+    onMount(() => {
+        gamesPromise = fetchGames();
+
+        const storedUser = JSON.parse(localStorage.getItem('user'));
+        if (storedUser) {
+            loggedInUser = storedUser.email;
+        }
+    });
 
     const handleSearch = () => {
-        fetchGames();
+        gamesPromise = fetchGames();
     };
 
-    $: if (selectedPrice || selectedPublisher || selectedGenre || searchedGame) {
-        fetchGames();
-    }
-    fetchGames();
+    const handleFilterChange = (event) => {
+        selectedPrice = event.detail.selectedPrice;
+        selectedPublisher = event.detail.selectedPublisher;
+        selectedGenre = event.detail.selectedGenre;
+        gamesPromise = fetchGames();
+    };
+
+    const logout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        loggedInUser = null;
+        page('/login');
+    };
 </script>
 
 <div class="container w-full max-w-[1600px] mx-auto">
     <header class="flex justify-between items-center p-5">
         <h1 class="text-4xl font-extrabold text-center text-gray-900 tracking-tight">GAMEBIDZ</h1>
+
         <SearchBar bind:searchedGame={searchedGame} on:search={handleSearch}/>
-        <Link to="/login"
-              class="text-md text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out">
-            Login
-        </Link>
+
+        <UserDropdown/>
     </header>
 
     <div class="main-content flex">
         <FilterSection bind:selectedPrice={selectedPrice} bind:selectedPublisher={selectedPublisher}
-                       bind:selectedGenre={selectedGenre}/>
+                       bind:selectedGenre={selectedGenre} on:filterChange={handleFilterChange}/>
+
         <section class="items-flex flex flex-col md:flex-row lg:flex-row gap-5 p-5 w-3/4">
-            <Games {games}/>
+            {#await gamesPromise}
+                <p class="text-center text-gray-700">Games worden geladen...</p>
+            {:then games}
+                {#if games && Array.isArray(games) && games.length > 0}
+                    <Games {games}/>
+                {:else if games && Array.isArray(games) && games.length === 0}
+                    <p class="text-center text-gray-700">Geen games gevonden.</p>
+                {:else}
+                    <p class="text-center text-red-500">Er ging iets mis bij het laden van de games.</p>
+                {/if}
+            {:catch error}
+                <p class="text-center text-red-500">{error.message}</p>
+            {/await}
         </section>
     </div>
 </div>
