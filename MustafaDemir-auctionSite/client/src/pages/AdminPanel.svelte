@@ -2,6 +2,7 @@
     import AddButton from "../components/adminPanelComponents/AddButton.svelte";
     import Dashboard from "../components/adminPanelComponents/gamesDashboard.svelte";
     import SearchBar from "../components/commonComponents/SearchBar.svelte";
+    import UserDropdown from "../components/UserDropdown.svelte";
     import {onMount} from "svelte";
 
     let gamelist = [];
@@ -136,7 +137,7 @@
     }
 
     function handleSearch() {
-        fetchGames();  // Update the games based on the search term
+        fetchGames();
     }
 </script>
 
@@ -146,8 +147,17 @@
         <p>Bezig met het controleren van toegang...</p>
     {:then games}
         {#if isAdmin}
-            <!-- Search Bar -->
-            <SearchBar bind:searchedGame={searchedGame} on:search={handleSearch}/>
+
+            <nav class="flex justify-between items-center">
+                <div>
+                    <UserDropdown/>
+                </div>
+                <div class="flex-1">
+                    <SearchBar bind:searchedGame={searchedGame} on:search={handleSearch}/>
+                </div>
+
+            </nav>
+
 
             <!-- Add Button and Add Game Form -->
             <div class="flex justify-end mt-4 mr-48">

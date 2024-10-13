@@ -12,18 +12,21 @@ const port = 3000;
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
+// CORS
 app.use(cors({
-    origin: 'http://localhost:5173'  // Allow requests from your frontend origin
+    origin: 'http://localhost:5173'
 }));
 
 app.use(express.json());
 
+// Maak de photos folder beschikbaar
 app.use('/photos', express.static(path.join(__dirname, 'data', 'photos')));
 app.use('/games', gameRouter, bidRouter);
 app.use('/', bidRouter)
 app.use('/users', userRouter);
 
-app.use(function (err, req, res, next) {
+// Geef foutmelding terug als er een conflict ontstaat bij de server
+app.use(function (err, req, res) {
     res
         .status(err.status || 500)
         .json({

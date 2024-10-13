@@ -4,6 +4,7 @@
 
     let loggedInUser = null;
     let showDropdown = false;
+    let isAdmin = null;
 
     // Haal de ingelogde gebruiker op uit localStorage zodra de component wordt geladen
     onMount(() => {
@@ -11,6 +12,10 @@
         if (storedUser && storedUser.email) {
             loggedInUser = storedUser.email;  // Stel de email in als de gebruiker is ingelogd
         }
+        if (storedUser && storedUser.role) {
+            isAdmin = storedUser.role === 'admin';  // Controleer of de gebruiker een admin is
+        }
+        console.log(isAdmin);
     });
 
     function logout() {
@@ -18,7 +23,7 @@
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         loggedInUser = null;
-        page("/login");
+        page("/");
     }
 
     function toggleDropdown() {
@@ -29,6 +34,10 @@
     function goToWonAuctions() {
         // Navigeer naar de "gewonnen veilingen" pagina
         page('/won-auctions');
+    }
+
+    function goToLoginPage() {
+        page('/login');
     }
 </script>
 
@@ -47,21 +56,32 @@
 
         <!-- Dropdown content, alleen tonen wanneer showDropdown true is -->
         {#if showDropdown}
-            <div class="absolute right-0 z-10 mt-2 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-full"
-                 role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
-                   on:click={goToWonAuctions}>
-                    Gewonnen veilingen
-                </a>
-                <a href="#" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
-                   on:click={logout}>Log out</a>
-            </div>
+            {#if isAdmin}
+                <!-- Admin-specific dropdown content -->
+                <div class="absolute right-0 z-10 mt-2 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-full"
+                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                    <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                       on:click={logout}>Log out</a>
+                </div>
+            {:else}
+                <!-- General user dropdown content -->
+                <div class="absolute right-0 z-10 mt-2 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-full"
+                     role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                    <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                       on:click={goToWonAuctions}>
+                        Gewonnen veilingen
+                    </a>
+                    <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
+                       on:click={logout}>Log out</a>
+                </div>
+            {/if}
         {/if}
     </div>
 {:else}
     <!-- Als de gebruiker niet is ingelogd, toon een login-knop -->
     <a href="/login"
-       class="text-md text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out">
+       class="text-md text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out"
+    on:click={goToLoginPage}>
         Login
     </a>
 {/if}

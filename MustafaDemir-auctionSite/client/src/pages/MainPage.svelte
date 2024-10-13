@@ -1,7 +1,7 @@
 <script>
     import {onMount} from 'svelte';
-    import Games from '../components/mainPageC\'en/GamesList.svelte';
-    import FilterSection from '../components/mainPageC\'en/FilterSection.svelte';
+    import Games from '../components/mainPageComponenten/GamesList.svelte';
+    import FilterSection from '../components/mainPageComponenten/FilterSection.svelte';
     import SearchBar from '../components/commonComponents/SearchBar.svelte';
     import UserDropdown from "../components/UserDropdown.svelte";
     import page from 'page';
@@ -41,14 +41,14 @@
         return gamesData;
     };
 
-    onMount(() => {
-        gamesPromise = fetchGames();
-
         const storedUser = JSON.parse(localStorage.getItem('user'));
         if (storedUser) {
             loggedInUser = storedUser.email;
         }
-    });
+
+    gamesPromise = fetchGames();
+
+        console.log(gamesPromise)
 
     const handleSearch = () => {
         gamesPromise = fetchGames();
@@ -67,6 +67,7 @@
         loggedInUser = null;
         page('/login');
     };
+
 </script>
 
 <div class="container w-full max-w-[1600px] mx-auto">

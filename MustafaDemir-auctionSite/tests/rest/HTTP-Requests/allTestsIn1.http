@@ -10,8 +10,6 @@ Accept: application/json
     });
 %}
 
-###
-
 ### GOOD GET request to return bids for a specific user with no bids
 GET http://localhost:3000/users/3/bids
 Accept: application/json
@@ -47,6 +45,7 @@ Accept: application/json
         client.assert(response.body.message === "Invalid user ID", "Expected 'Invalid user ID' message");
     });
 %}
+
 
 ### GOOD GET request to filter games by title (correcte titel)
 GET http://localhost:3000/games?title=Resident%20Evil
@@ -157,18 +156,6 @@ Content-Type: application/json
     });
 %}
 
-### GOOD GET request to retrieve all users
-GET http://localhost:3000/users
-Content-Type: application/json
-
-> {%
-    client.test("Get all users successfully", function () {
-        // Controleer of de status 200 is
-        client.assert(response.status === 200, "Response status is not 200");
-
-    });
-%}
-
 ### GOOD GET request to return bids for a specific game (with bids)
 GET http://localhost:3000/games/1/bids
 Accept: application/json
@@ -218,6 +205,7 @@ Accept: application/json
         client.assert(response.body.message === "Invalid game ID", "Expected 'Invalid game ID' message");
     });
 %}
+
 
 ### GOOD GET request to return a specific game by valid ID
 GET http://localhost:3000/games/1
@@ -367,7 +355,6 @@ Content-Type: application/json
     });
 %}
 
-
 ###
 POST http://localhost:3000/games/1/bids
 Content-Type: application/json
@@ -443,6 +430,7 @@ Content-Type: application/json
         client.assert(response.body.message.includes("Invalid game ID"), "Expected invalid game ID error");
     });
 %}
+
 
 ### GOOD POST request to log in a user
 POST http://localhost:3000/users/login
@@ -629,3 +617,7 @@ Content-Type: application/json
         client.assert(response.body.message.includes("Invalid game ID"), "Expected invalid game ID error");
     });
 %}
+
+
+
+

@@ -23,7 +23,6 @@
         params = p;
     }
 
-
     // Setup routes using Page.js
     onMount(() => {
         page('/', () => mount(MainPage));
@@ -37,7 +36,8 @@
         page('/won-auctions', () => {
             console.log('Navigating to won auctions page');
             mount(WonAuctions);
-        });        page();
+        });
+        page();
     });
 </script>
 

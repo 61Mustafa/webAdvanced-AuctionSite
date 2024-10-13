@@ -198,7 +198,7 @@ export const users = [
         userId: 1,
         username: "john_doe",
         email: "john@example.com",
-        password: "$2b$12$mwfv4Kd0vzQdhPTogN0iBuPIfGNzNxA2hAprW2t4L1cfmV9G7xtFS",
+        password: bcrypt.hashSync("hashedpassword1"),
         role : "user",
         bids: [
             {
@@ -260,16 +260,16 @@ export const users = [
         email: "emma@example.com",
         password: bcrypt.hashSync("hashedpassword3"),
         role: "user",
-        bids: [] // No bids placed by this user
+        bids: []
     },
-    ///the password of admin is hashedpassword4 !!!!
+
     {
         userId: 4,
         username: "admin",
         email: "admin@example.com",
-        password: "$2b$12$A.c5dY.I3c15RPbCl.k62eazNUS0pg/u7NnHZsiDrYwVXnC9qz3Ay",
+        password: bcrypt.hashSync("hashedpassword4"),
         role: "admin",
-        bids: [] // Admin user does not place bids
+        bids: []
     }
 ];
 

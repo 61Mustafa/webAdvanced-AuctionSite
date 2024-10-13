@@ -1,5 +1,3 @@
-// MustafaDemir-auctionSite/server/src/routes/bid-router.js
-
 import express from 'express';
 import {
     getBidsForGame,

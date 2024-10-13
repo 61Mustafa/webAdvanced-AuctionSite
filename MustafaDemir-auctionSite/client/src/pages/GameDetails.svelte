@@ -10,7 +10,9 @@
     let bidAmount = null; // Variabele om het bodbedrag op te slaan
     let token = localStorage.getItem('token'); // Haal de JWT-token op
     let bids = []; // Biedingenlijst
-    let highestBid = 0; // Variabele om het hoogste bod bij te houden
+    let highestBid = 0; // Variabele
+    let gameDetailsPromise;// om het hoogste bod bij te houden
+    let bidsPromise;
 
     // Functie om de gamegegevens op te halen
     const fetchGame = async () => {
@@ -65,6 +67,8 @@
             throw error;
         }
     };
+
+    bidsPromise = fetchBids();
 
     // Functie om een bod te plaatsen
     const placeBid = async () => {
@@ -129,7 +133,7 @@
         }
     };
 
-    let gameDetailsPromise = fetchGame(); // Ophaal gamegegevens direct
+    gameDetailsPromise = fetchGame(); // Ophaal gamegegevens direct
 
 </script>
 
