@@ -1,25 +1,27 @@
 ### GOOD POST request to add a new user
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-  "username": "blabla612222",
-  "email": "blabla612234",
+  "username": "blabla6122322323232233",
+  "email": "blabla6122323223323433",
   "password": "password6183224"
 }
 
 > {%
     client.test("User added successfully", function () {
+        console.log("Response status:", response.status);
+        console.log("Response body:", response.body);
+
         // Controleer of de status 201 is
-        client.assert(response.status === 201, "Response status is not 201");
+        client.assert(response.status === 201, "Response status is not 201. Received: " + response.status);
 
         // Controleer of de message "New user created" is
-        client.assert(response.body.message === "New user created", "Expected 'New user created' message");
+        client.assert(response.body.message === "New user created", "Expected 'New user created' message, but got: " + response.body.message);
     });
 %}
-
 ### BAD POST request - Missing required fields
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
@@ -34,11 +36,10 @@ Content-Type: application/json
 %}
 
 ### BAD POST request - User already exists
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-  "userId": 1,
   "username": "john_doe",
   "email": "john@example.com",
   "password": "hashedpassword1"

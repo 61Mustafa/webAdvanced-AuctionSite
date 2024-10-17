@@ -1,10 +1,11 @@
 ### GOOD POST request to log in a user
 POST http://localhost:3000/users/login
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
-  "username": "john_doe",
-  "password": "hashedpassword1"
+  "email": "emma@example.com",
+  "password": "hashedpassword3"
 }
 
 > {%
@@ -16,7 +17,7 @@ Content-Type: application/json
         client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
 
         // Controleer of de gebruiker in de response de juiste username heeft
-        client.assert(response.body.user.username === "john_doe", "Expected username to be 'john_doe'");
+        client.assert(response.body.user.email === "emma@example.com", "Expected username to be 'emma@example.com'");
 
         // Controleer of er een token wordt teruggestuurd
         client.assert(response.body.token, "Expected a token in the response");
@@ -25,10 +26,11 @@ Content-Type: application/json
 
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/users/login
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
-  "username": "john_doe"
+  "email": "emma@example.com"
 }
 
 > {%
@@ -43,32 +45,17 @@ Content-Type: application/json
 
 ### BAD POST request - Incorrect password
 POST http://localhost:3000/users/login
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
-  "username": "john_doe",
-  "password": "wrongpassword"
+  "email": "emma@example.com",
+  "password": "hashedpassword234234"
 }
 
 > {%
     client.test("Incorrect password results in 401 Unauthorized", function () {
         client.assert(response.status === 401, "Response status is not 401");
         client.assert(response.body.message.includes("Incorrect password"), "Expected unauthorized error");
-    });
-%}
-
-### BAD POST request - User not found
-POST http://localhost:3000/users/login
-Content-Type: application/json
-
-{
-  "username": "unknown_user",
-  "password": "somepassword"
-}
-
-> {%
-    client.test("User not found results in 404", function () {
-        client.assert(response.status === 404, "Response status is not 404");
-        client.assert(response.body.message.includes("User not found"), "Expected not found error");
     });
 %}

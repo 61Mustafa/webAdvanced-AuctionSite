@@ -5,21 +5,20 @@
     let loggedInUser = null;
     let showDropdown = false;
     let isAdmin = null;
+    let currentPath = "";
 
-    // Haal de ingelogde gebruiker op uit localStorage zodra de component wordt geladen
     onMount(() => {
         const storedUser = JSON.parse(localStorage.getItem("user"));
         if (storedUser && storedUser.email) {
-            loggedInUser = storedUser.email;  // Stel de email in als de gebruiker is ingelogd
+            loggedInUser = storedUser.email;
         }
         if (storedUser && storedUser.role) {
-            isAdmin = storedUser.role === 'admin';  // Controleer of de gebruiker een admin is
+            isAdmin = storedUser.role === 'admin';
         }
-        console.log(isAdmin);
+        currentPath = page.current;
     });
 
     function logout() {
-        // Verwijder token en user-gegevens uit localStorage
         localStorage.removeItem('token');
         localStorage.removeItem('user');
         loggedInUser = null;
@@ -27,12 +26,10 @@
     }
 
     function toggleDropdown() {
-        // Toggle de dropdown zichtbaar/onzichtbaar
         showDropdown = !showDropdown;
     }
 
     function goToWonAuctions() {
-        // Navigeer naar de "gewonnen veilingen" pagina
         page('/won-auctions');
     }
 
@@ -41,10 +38,9 @@
     }
 </script>
 
-<!-- HTML: Weergave van de gebruiker of login-knop -->
+
 {#if loggedInUser}
     <div class="relative inline-block">
-        <!-- Dropdown trigger -->
         <button class="text-md flex text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out"
                 id="user-menu-button" aria-expanded={showDropdown} aria-haspopup="true" on:click={toggleDropdown}>
             <span>{loggedInUser}</span>
@@ -54,34 +50,41 @@
             </svg>
         </button>
 
-        <!-- Dropdown content, alleen tonen wanneer showDropdown true is -->
         {#if showDropdown}
             {#if isAdmin}
-                <!-- Admin-specific dropdown content -->
+
                 <div class="absolute right-0 z-10 mt-2 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-full"
                      role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
+                    {#if currentPath === '/'}
+                        <a href="/admin" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                           role="menuitem">
+                            Ga naar admin paneel
+                        </a>
+                    {:else}
+                        <a href="/" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem">
+                            Ga naar veilingen
+                        </a>
+                    {/if}
                     <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
-                       on:click={logout}>Log out</a>
+                       on:click={logout}>Log uit</a>
                 </div>
             {:else}
-                <!-- General user dropdown content -->
+
                 <div class="absolute right-0 z-10 mt-2 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-full"
                      role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                     <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
-                       on:click={goToWonAuctions}>
-                        Gewonnen veilingen
-                    </a>
+                       on:click={goToWonAuctions}>Gewonnen veilingen</a>
                     <a href="" class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100" role="menuitem"
-                       on:click={logout}>Log out</a>
+                       on:click={logout}>Log uit</a>
                 </div>
             {/if}
         {/if}
     </div>
 {:else}
-    <!-- Als de gebruiker niet is ingelogd, toon een login-knop -->
+
     <a href="/login"
        class="text-md text-white bg-black hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-blue-300 focus:ring-opacity-50 px-6 py-2 rounded-full shadow-md transition duration-300 ease-in-out"
-    on:click={goToLoginPage}>
+       on:click={goToLoginPage}>
         Login
     </a>
 {/if}

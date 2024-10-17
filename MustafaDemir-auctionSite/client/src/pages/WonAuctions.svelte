@@ -2,11 +2,10 @@
     let wonAuctions = [];
     let totalPayment = 0;
     let userId = JSON.parse(localStorage.getItem('user')).userId; // Get the user ID
-    let wonAuctionsPromise; // Promise to store the auctions
-    let errorMessage = '';  // Variable to store error messages
+    let wonAuctionsPromise;
+    let errorMessage = '';
     const backendUrl = 'http://localhost:3000';
 
-    // Function to fetch the won auctions
     const fetchWonAuctions = async () => {
         try {
             const res = await fetch(`${backendUrl}/won-auctions`, {
@@ -20,7 +19,7 @@
             }
 
             const data = await res.json();
-            console.log('Fetched won auctions:', data); // Log to check
+            console.log('Fetched won auctions:', data);
             wonAuctions = data.wonAuctions;
             totalPayment = data.totalPayment;
             return data;
@@ -29,18 +28,15 @@
             throw error;
         }
     };
-    wonAuctionsPromise = fetchWonAuctions(); // Store the promise
+    wonAuctionsPromise = fetchWonAuctions();
 </script>
-<!-- Component Layout -->
 <div class="min-h-screen bg-gray-100 p-8">
     <h1 class="text-3xl font-bold mb-4">Gewonnen veilingen</h1>
 
     {#await wonAuctionsPromise}
-        <!-- Loading state -->
         <p class="text-gray-700">Gegevens worden geladen...</p>
 
     {:then data}
-        <!-- Success state: auctions successfully fetched -->
         {#if wonAuctions.length === 0}
             <p class="text-gray-500">Je hebt nog geen veilingen gewonnen.</p>
         {:else}
@@ -66,7 +62,6 @@
         {/if}
 
     {:catch error}
-        <!-- Error state -->
         <p class="text-red-500">Fout bij het laden van de gegevens: {error.message}</p>
     {/await}
 </div>

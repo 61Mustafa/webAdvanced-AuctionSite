@@ -54,18 +54,23 @@ export function addGame(req, res) {
         return res.status(statusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
     }
 
+    // Validaties uitvoeren
+    const validationErrors = validateGameFields(title, description, publisher, category, startingPrice, auctionEndDate);
+    if (validationErrors.length > 0) {
+        return res.status(statusCodes.BAD_REQUEST).json({message: validationErrors.join(', ')});
+    }
+
     const existingGame = games.find(game => game.gameId === gameId);
     if (existingGame) {
         return res.status(statusCodes.CONFLICT).json({message: 'Game already exists'});
     }
 
-    // Nieuwe userID is 1tje hoger dan de laatste userID
-    const newGameId = games.length > 0 ? Math.max(
-        ...games.map(game => game.gameId)) + 1 : 1;
+    // Nieuwe game ID genereren
+    const newGameId = generateNewGameId(games);
 
-    // Voeg nieuwe game data toe aaa de lijst
+    // Voeg nieuwe game data toe aan de lijst
     const newGame = {
-        gameId : newGameId,
+        gameId: newGameId,
         title,
         description,
         publisher,
@@ -77,7 +82,6 @@ export function addGame(req, res) {
 
     return res.status(statusCodes.CREATED).json({message: 'New game created', game: newGame});
 }
-
 // ALL PUTS
 
 // PUT - Bewerk game
@@ -92,8 +96,15 @@ export function updateGame(req, res) {
     // Vraag de nieuwe waardes uit de body op
     const {title, description, publisher, category, startingPrice, auctionEndDate} = req.body;
 
+    // Controleer of alle velden zijn ingevuld
     if (!title || !description || !publisher || !category || !startingPrice || !auctionEndDate) {
-        return res.status(statusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
+        return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
+    }
+
+    // Validaties uitvoeren
+    const validationErrors = validateGameFields(title, description, publisher, category, startingPrice, auctionEndDate);
+    if (validationErrors.length > 0) {
+        return res.status(StatusCodes.BAD_REQUEST).json({message: validationErrors.join(', ')});
     }
 
     // Bewerk game met de nieuwe waardes
@@ -104,9 +115,8 @@ export function updateGame(req, res) {
     game.startingPrice = startingPrice;
     game.auctionEndDate = auctionEndDate;
 
-    return res.status(statusCodes.OK).json({message: `Game with ID ${gameId} successfully updated`, game});
+    return res.status(StatusCodes.OK).json({message: `Game with ID ${gameId} successfully updated`, game});
 }
-
 // ALL DELETES
 
 // DELETE - Verwijder game
@@ -129,3 +139,31 @@ export function deleteGame(req, res) {
     return res.status(StatusCodes.OK).json({message: `Game with ID ${gameId} successfully deleted`});
 }
 
+function validateGameFields(title, description, publisher, category, startingPrice, auctionEndDate) {
+    const errors = [];
+
+    if (typeof title !== 'string' || title.trim() === '' || title.length > 100) {
+        errors.push('Title must be a non-empty string and not exceed 100 characters');
+    }
+    if (typeof description !== 'string' || description.trim() === '') {
+        errors.push('Description must be a non-empty string');
+    }
+    if (typeof publisher !== 'string' || publisher.trim() === '') {
+        errors.push('Publisher must be a non-empty string');
+    }
+    if (typeof category !== 'string' || category.trim() === '') {
+        errors.push('Category must be a non-empty string');
+    }
+    if (typeof startingPrice !== 'number' || startingPrice <= 0) {
+        errors.push('Starting price must be a positive number');
+    }
+    const auctionEndDateObj = new Date(auctionEndDate);
+    if (isNaN(auctionEndDateObj.getTime()) || auctionEndDateObj <= new Date()) {
+        errors.push('Auction end date must be a valid date in the future');
+    }
+    return errors;
+}
+
+function generateNewGameId(games) {
+    return games.length > 0 ? Math.max(...games.map(game => game.gameId)) + 1 : 1;
+}

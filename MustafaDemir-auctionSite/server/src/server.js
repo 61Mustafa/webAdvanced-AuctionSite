@@ -21,7 +21,7 @@ app.use(express.json());
 
 // Maak de photos folder beschikbaar
 app.use('/photos', express.static(path.join(__dirname, 'data', 'photos')));
-app.use('/games', gameRouter, bidRouter);
+app.use('/games', gameRouter);
 app.use('/', bidRouter)
 app.use('/users', userRouter);
 

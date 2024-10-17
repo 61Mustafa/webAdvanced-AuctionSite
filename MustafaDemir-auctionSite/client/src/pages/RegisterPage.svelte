@@ -1,5 +1,11 @@
 <script>
     import page from "page";
+    import {
+        validateEmail,
+        validatePassword,
+        validateUsername,
+        validateConfirmPassword
+    } from "../commonComponents/inputValidation.js";
 
     let username = '';
     let email = '';
@@ -7,20 +13,38 @@
     let confirmPassword = '';
     let errorMessage = '';
     let registrationPromise = null;
-    let isRegistering = false;  // Nieuwe boolean om te checken of registratie gestart is
+    let isRegistering = false;
 
-    // Function to trigger user registration
+    const validateInputs = () => {
+        errorMessage = "";
+
+        if (!validateUsername(username)) {
+            errorMessage = 'Gebruikersnaam moet een niet-lege string zijn.';
+            return false;
+        }
+        if (!validateEmail(email)) {
+            errorMessage = 'Ongeldig e-mailadres.';
+            return false;
+        }
+        if (!validatePassword(password)) {
+            errorMessage = 'Wachtwoord moet minimaal 8 tekens lang zijn.';
+            return false;
+        }
+        if (!validateConfirmPassword(password, confirmPassword)) {
+            errorMessage = 'Wachtwoorden komen niet overeen.';
+            return false;
+        }
+
+        return true;
+    };
+
     function registerUser() {
-        // Check if passwords match
-        if (password !== confirmPassword) {
-            errorMessage = 'Wachtwoorden komen niet overeen';
+        if (!validateInputs()) {
             return;
         }
 
-        // Zet isRegistering naar true om de await block te tonen
         isRegistering = true;
 
-        // Initiate the registration promise to use in the await block
         registrationPromise = fetch('http://localhost:3000/users/register', {
             method: 'POST',
             headers: {
@@ -35,12 +59,11 @@
             .then(response => response.json())
             .then(result => {
                 if (result && result.message === 'New user created') {
-                    // Redirect or handle success
-                    page("/");
+                    localStorage.setItem('token', result.token);
+                    localStorage.setItem('user', JSON.stringify(result.user));
+                    page('/');
                 } else {
-                    // Handle error from server
-                    errorMessage = result.message || 'Er ging iets mis';
-                    throw new Error(errorMessage);
+                    errorMessage = result.message || 'Registration failed';
                 }
             })
             .catch(error => {
@@ -65,34 +88,24 @@
                     <div>
                         <label for="username"
                                class="block mb-2 text-sm font-medium text-gray-900">Gebruikersnaam</label>
-                        <input type="text" name="username" id="username"
-                               bind:value={username}
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                               placeholder="Jouw gebruikersnaam" required>
+                        <input type="text" name="username" id="username" bind:value={username}
+                               class="w-full px-3 py-2 border rounded"/>
                     </div>
                     <div>
                         <label for="email" class="block mb-2 text-sm font-medium text-gray-900">Je email</label>
-                        <input type="email" name="email" id="email"
-                               bind:value={email}
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                               placeholder="name@company.com" required>
+                        <input type="email" name="email" id="email" bind:value={email}
+                               class="w-full px-3 py-2 border rounded"/>
                     </div>
                     <div>
                         <label for="password" class="block mb-2 text-sm font-medium text-gray-900">Wachtwoord</label>
-                        <input type="password" name="password" id="password"
-                               bind:value={password}
-                               placeholder="••••••••"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                               required>
+                        <input type="password" name="password" id="password" bind:value={password}
+                               class="w-full px-3 py-2 border rounded"/>
                     </div>
                     <div>
-                        <label for="confirm-password"
-                               class="block mb-2 text-sm font-medium text-gray-900">Herhaal wachtwoord</label>
+                        <label for="confirm-password" class="block mb-2 text-sm font-medium text-gray-900">Herhaal
+                            wachtwoord</label>
                         <input type="password" name="confirm-password" id="confirm-password"
-                               bind:value={confirmPassword}
-                               placeholder="••••••••"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2.5"
-                               required>
+                               bind:value={confirmPassword} class="w-full px-3 py-2 border rounded"/>
                     </div>
 
                     {#if errorMessage}
@@ -108,20 +121,6 @@
                         hier in</a>
                     </p>
                 </form>
-
-                <!-- Await block only visible when isRegistering is true -->
-                {#if isRegistering}
-                    {#await registrationPromise}
-                        <!-- Loading state -->
-                        <p class="text-gray-500">Registreren...</p>
-                    {:then result}
-                        <!-- Success message -->
-                        <p class="text-green-500">Registratie succesvol! Je wordt doorgestuurd...</p>
-                    {:catch error}
-                        <!-- Error state -->
-                        <p class="text-red-500">{errorMessage}</p>
-                    {/await}
-                {/if}
             </div>
         </div>
     </div>

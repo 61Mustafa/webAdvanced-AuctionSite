@@ -9,28 +9,6 @@ Content-Type: application/json
     });
 %}
 
-### GOOD GET request to filter games by category (correcte categorie)
-GET http://localhost:3000/games?category=Horror
-Content-Type: application/json
-
-> {%
-    client.test("Filter games by category works and returns games", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.length !== 0, "Expected a filled array");
-    });
-%}
-
-### GOOD GET request to filter games by publisher (correcte uitgever)
-GET http://localhost:3000/games?publisher=Sony
-Content-Type: application/json
-
-> {%
-    client.test("Filter games by publisher works and returns games", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.length !== 0, "Expected a filled array");
-    });
-%}
-
 ### GOOD GET request to filter games by price up to 60 euro
 GET http://localhost:3000/games?startPrice=60
 Content-Type: application/json
@@ -48,17 +26,6 @@ Content-Type: application/json
 
 > {%
     client.test("Filter games by title and publisher works and returns games", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.length !== 0, "Expected a filled array");
-    });
-%}
-
-### GOOD GET request to filter games by category and startPrice
-GET http://localhost:3000/games?category=Horror&startPrice=70
-Content-Type: application/json
-
-> {%
-    client.test("Filter games by category and price works and returns games", function () {
         client.assert(response.status === 200, "Response status is not 200");
         client.assert(response.body.length !== 0, "Expected a filled array");
     });

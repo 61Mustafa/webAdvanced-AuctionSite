@@ -133,66 +133,6 @@ export const games = [
     }
 ];
 
-
-export const bids = [
-    {
-        bidId: 1,
-        bidAmount: 60,
-        bidTime: "2024-09-25T10:00:00Z",
-        userId: 1,
-        gameId: 1
-    },
-    {
-        bidId: 2,
-        bidAmount: 65,
-        bidTime: "2024-09-26T12:00:00Z",
-        userId: 2,
-        gameId: 1
-    },
-    {
-        bidId: 3,
-        bidAmount: 72,
-        bidTime: "2024-09-27T14:30:00Z",
-        userId: 3,
-        gameId: 2
-    },
-    {
-        bidId: 4,
-        bidAmount: 75,
-        bidTime: "2024-09-28T15:00:00Z",
-        userId: 4,
-        gameId: 2
-    },
-    {
-        bidId: 5,
-        bidAmount: 70,
-        bidTime: "2024-09-28T17:00:00Z",
-        userId: 5,
-        gameId: 3
-    },
-    {
-        bidId: 6,
-        bidAmount: 85,
-        bidTime: "2024-09-29T12:00:00Z",
-        userId: 6,
-        gameId: 4
-    },
-    {
-        bidId: 7,
-        bidAmount: 90,
-        bidTime: "2024-09-30T16:00:00Z",
-        userId: 7,
-        gameId: 4
-    },
-    {
-        bidId: 8,
-        bidAmount: 62,
-        bidTime: "2024-09-30T14:30:00Z",
-        userId: 8,
-        gameId: 5
-    }
-];
-
 export const users = [
     {
         userId: 1,

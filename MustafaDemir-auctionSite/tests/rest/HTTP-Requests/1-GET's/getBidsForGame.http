@@ -13,12 +13,12 @@ Accept: application/json
 ###
 
 ### GOOD GET request to return bids for a specific game (no bids)
-GET http://localhost:3000/games/10/bids
+GET http://localhost:3000/games/9/bids
 Accept: application/json
 
 > {%
     client.test("No bids found for game ID 2", function () {
-        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.status === 404, "Response status is not 200");
         client.assert(response.body.message === "No bids found for this game", "Expected 'No bids found for this game' message");
     });
 %}

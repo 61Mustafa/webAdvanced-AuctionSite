@@ -1,8 +1,8 @@
 POST http://localhost:3000/games/1/bids
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
-  "bidId": 1,
   "bidAmount": 70,
   "bidTime": "2024-09-25T10:00:00Z",
   "userId": 1,
@@ -11,19 +11,14 @@ Content-Type: application/json
 
 > {%
     client.test("Bid added successfully", function () {
-        // Controleer of de status 201 is
         client.assert(response.status === 201, "Response status is not 201");
-
-        // Controleer of de message exact "Bid added successfully" is
         client.assert(response.body.message === "Bid added successfully", "Expected 'Bid added successfully' message");
-
-        // Controleer of de bidId in de response overeenkomt met het verzoek
-        client.assert(response.body.bid.bidId === 1, "Expected bidId to be 1");
     });
 %}
 
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/games/1/bids
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
@@ -39,10 +34,10 @@ Content-Type: application/json
 
 ### BAD POST request - Game not found
 POST http://localhost:3000/games/999/bids
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
-  "bidId": 1,
   "bidAmount": 70,
   "bidTime": "2024-09-25T10:00:00Z",
   "userId": 1
@@ -57,10 +52,10 @@ Content-Type: application/json
 
 ### BAD POST request - Invalid game ID
 POST http://localhost:3000/games/abc/bids
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
-  "bidId": 1,
   "bidAmount": 70,
   "bidTime": "2024-09-25T10:00:00Z",
   "userId": 1

@@ -1,9 +1,10 @@
 <script>
     import {onMount} from 'svelte';
-    import Games from '../components/mainPageComponenten/GamesList.svelte';
-    import FilterSection from '../components/mainPageComponenten/FilterSection.svelte';
-    import SearchBar from '../components/commonComponents/SearchBar.svelte';
-    import UserDropdown from "../components/UserDropdown.svelte";
+    import Games from '../mainPageComponenten/GamesList.svelte';
+    import FilterSection from '../mainPageComponenten/FilterSection.svelte';
+    import SearchBar from '../commonComponents/SearchBar.svelte';
+    import UserDropdown from "../commonComponents/UserDropdown.svelte";
+    import Logo from "../commonComponents/Logo.svelte";
     import page from 'page';
 
     let selectedPrice = "";
@@ -71,9 +72,9 @@
 </script>
 
 <div class="container w-full max-w-[1600px] mx-auto">
-    <header class="flex justify-between items-center p-5">
-        <h1 class="text-4xl font-extrabold text-center text-gray-900 tracking-tight">GAMEBIDZ</h1>
 
+    <header class="flex justify-between items-center border-b pb-4 mt-12">
+        <Logo/>
         <SearchBar bind:searchedGame={searchedGame} on:search={handleSearch}/>
 
         <UserDropdown/>

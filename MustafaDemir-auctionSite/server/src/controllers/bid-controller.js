@@ -1,8 +1,7 @@
-import {games} from '../data/data.js';
-import {users} from '../data/data.js';
+import {games, users} from '../data/data.js';
 import statusCodes, {StatusCodes} from 'http-status-codes';
 
-// GET - Specifieke game
+// GET - Biedingen voor specifieke game
 export function getBidsForGame(req, res) {
     const gameId = Number(req.params.id);
 
@@ -11,20 +10,15 @@ export function getBidsForGame(req, res) {
     const game = searchAndReturnGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} does not exist!`);
     if (!game) return;
 
-    // Voeg de gebruikersnaam toe aan het bod
     if (game.bids && game.bids.length > 0) {
-        const bidsWithUsername = game.bids.map(bid => {
-            const user = users.find(user => user.userId === bid.userId);
-            const username = user ? user.username : 'undefined';
-            return {...bid, username};
-        });
+        const bidsWithUsername = addUsernamesToBids(game.bids);
         return res.status(StatusCodes.OK).json(bidsWithUsername);
     } else {
         return res.status(StatusCodes.NOT_FOUND).json({message: 'No bids found for this game'});
     }
 }
 
-// POST -  Nieuwe bod
+// POST - Nieuwe bod
 export function addBid(req, res) {
     const gameId = Number(req.params.id);
     const {bidAmount, bidTime, userId} = req.body;
@@ -34,10 +28,8 @@ export function addBid(req, res) {
     const game = searchAndReturnGame(gameId, res, StatusCodes.NOT_FOUND, `Game with ID ${gameId} not found`);
     if (!game) return;
 
-    // Controleer of de veiling in het verleden is.
-    const currentTime = new Date();
-    const auctionEndTime = new Date(game.auctionEndDate);
-    if (auctionEndTime < currentTime) {
+    // Controleer of de veiling in het verleden is
+    if (new Date(game.auctionEndDate) < new Date()) {
         return res.status(StatusCodes.PRECONDITION_FAILED).json({
             message: 'The auction has already ended. You cannot place a bid on this game.'
         });
@@ -46,13 +38,26 @@ export function addBid(req, res) {
     // Nieuwe bidID is 1tje hoger dan de laatste BidID
     const newBidID = game.bids.length > 0 ? Math.max(...game.bids.map(bid => bid.bidId)) + 1 : 1;
 
+    // Controleer op ontbrekende vereiste velden
     if (!bidAmount || !bidTime || !userId) {
         return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
     }
 
-    // Zoek de gebruiker op basis van de userId
+    // Typecontrole
+    if (typeof bidAmount !== 'number' || bidAmount <= 0) {
+        return res.status(StatusCodes.BAD_REQUEST).json({message: 'Bid amount must be a positive number'});
+    }
+
+    const parsedBidTime = Date.parse(bidTime);
+    if (isNaN(parsedBidTime)) {
+        return res.status(StatusCodes.BAD_REQUEST).json({message: 'Invalid bid time'});
+    }
+
+    // Controleer of de gebruiker bestaat
     const user = users.find(user => user.userId === userId);
-    const username = user ? user.username : 'undefined';
+    if (!user) {
+        return res.status(StatusCodes.BAD_REQUEST).json({message: 'Invalid user ID'});
+    }
 
     // Bepaal het hoogste bod voor deze game
     const highestBid = game.bids.length > 0 ? Math.max(...game.bids.map(bid => bid.bidAmount)) : game.startingPrice;
@@ -65,46 +70,52 @@ export function addBid(req, res) {
     }
 
     // Maak nieuwe bod aan
-    const newBid = {bidId: newBidID, bidAmount, bidTime, userId, username, gameId};
+    const newBid = {
+        bidId: newBidID,
+        bidAmount,
+        bidTime: String(bidTime),
+        userId,
+        username: user.username,
+        gameId
+    };
     game.bids.push(newBid); // Voeg het nieuwe bod toe aan de game
 
     return res.status(StatusCodes.CREATED).json({message: 'Bid added successfully', bid: newBid});
 }
 
-
+// GET - Gewonnen veilingen
 export function getWonAuctions(req, res) {
     const userId = req.user.userId;
     const currentTime = new Date();
+    const wonAuctions = []; // Maak een lege array aan voor gewonnen veilingen
 
-    // Haal alle games op
-    // Maak lijst aan van gewonnen veilingen
-    const wonAuctions = games.filter(auction => {
+    games.forEach(auction => {
         const auctionEndDate = new Date(auction.auctionEndDate);
-        console.log(`Auction ID ${auction.gameId} end date: ${auctionEndDate}, current time: ${currentTime}`);
 
         // Check of de veiling al is afgelopen
         if (auctionEndDate < currentTime) {
-
             const highestBid = auction.bids.reduce((max, bid) => bid.bidAmount > max.bidAmount ? bid : max, {bidAmount: 0});
-            console.log(`Highest bid for auction ${auction.gameId}:`, highestBid);
 
             // Kijk of de gebruiker het hoogste bod heeft
             if (highestBid.userId === userId) {
-                console.log(`User ${userId} has won auction ${auction.gameId}`);
-                auction.highestBid = highestBid;
-                return res.status(StatusCodes.OK).json({wonAuctions, totalPayment});
+                auction.highestBid = highestBid; // Voeg het hoogste bod toe aan de veiling
+                wonAuctions.push(auction); // Voeg de gewonnen veiling toe aan de array
             }
         }
-        return res.status(StatusCodes.NOT_FOUND).json({message: 'No won auctions found'});
     });
 
     // Bereken totaalbedrag van gewonnen veilingen
     const totalPayment = wonAuctions.reduce((total, auction) => total + auction.highestBid.bidAmount, 0);
 
-    return res.status(StatusCodes.OK).json({wonAuctions, totalPayment});
+    if (wonAuctions.length > 0) {
+        return res.status(StatusCodes.OK).json({wonAuctions, totalPayment});
+    } else {
+        return res.status(StatusCodes.NOT_FOUND).json({message: 'No won auctions found'});
+    }
 }
 
-//Valideer de input van de gebruiker
+
+// Valideer de input van de gebruiker
 export function validateInput(res, value, statusCode, errorMessage) {
     if (isNaN(value)) {
         res.status(statusCode).json({message: errorMessage});
@@ -116,10 +127,18 @@ export function validateInput(res, value, statusCode, errorMessage) {
 // Zoek game en retourneer deze
 export function searchAndReturnGame(gameID, res, statusCode, errorMessage) {
     const game = games.find(game => game.gameId === gameID);
-
     if (!game) {
         res.status(statusCode).json({message: errorMessage});
         return null;
     }
     return game;
 }
+
+// Voeg gebruikersnaam toe aan biedingen
+function addUsernamesToBids(bids) {
+    return bids.map(bid => {
+        const user = users.find(user => user.userId === bid.userId);
+        return {...bid, username: user ? user.username : 'undefined'};
+    });
+}
+

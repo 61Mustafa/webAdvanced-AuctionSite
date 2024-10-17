@@ -1,0 +1,26 @@
+### GET request to example server
+GET http://localhost:3000/won-auctions
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Accept: application/json
+
+> {%
+    client.test("Valid request returns 200 OK", function () {
+        client.assert(response.status === 200, "Expected status 200, but got " + response.status);
+        client.assert(response.body.wonAuctions.length > 0, "Expected some won auctions to be returned.");
+    });
+    client.test("Response contains totalPayment", function () {
+        client.assert(response.body.totalPayment !== undefined, "Expected totalPayment field in response.");
+    });
+%}
+
+### BAD GET request with invalid token
+GET http://localhost:3000/won-auctions
+Authorization: Bearer hahahmal234324234
+Accept: application/json
+
+> {%
+    client.test("No won auctions returns 401 Not Found", function () {
+        client.assert(response.status === 401, "Expected status 401, but got " + response.status);
+    });
+%}
+

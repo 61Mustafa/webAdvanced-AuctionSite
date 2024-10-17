@@ -10,7 +10,7 @@
     import {onMount} from 'svelte';
 
     const backendUrl = 'http://localhost:3000';
-    const defaultImage = 'http://www.placeholder.com/150x150'; // Fallback image
+    const defaultImage = 'https://www.placeholder.com/150x150'; // Fallback image
 
     let timeRemaining = "";
     let interval;
@@ -34,20 +34,20 @@
         timeRemaining = `${days}d ${hours}h ${minutes}m ${seconds}s`;
     }
 
-    // Start de timer bij het laden van de component
+
     onMount(() => {
         calculateTimeRemaining();
         interval = setInterval(calculateTimeRemaining, 1000); // Update elke seconde
     });
 </script>
 
-<a href={`/games/${id}`}
-   class="block rounded-lg shadow-sm shadow-indigo-100 h-100 w-full sm:w-80 hover:shadow-lg transition-shadow duration-200">
+<a class="block rounded-lg shadow-sm shadow-indigo-100 h-100 w-full sm:w-80 hover:shadow-lg transition-shadow duration-200"
+   href={`/games/${id}`}>
     <div class="h-4/5">
         <img
                 alt={name}
-                src={image_path ? `${backendUrl}${image_path}` : defaultImage}
                 class="w-full h-full rounded-t-lg object-cover"
+                src={image_path ? `${backendUrl}${image_path}` : defaultImage}
         />
     </div>
 
@@ -66,25 +66,23 @@
         </dl>
 
         <div class="flex items-center justify-between text-xs mt-2">
-            <!-- Uitgever sectie, neemt 30% van de breedte -->
+
             <div class="flex flex-col gap-1 flex-shrink-0 flex-grow-0 basis-[34%]">
                 <span class="text-gray-500">Uitgever:</span>
                 <span class="font-medium">{publisher}</span>
             </div>
 
-            <!-- Genre sectie, neemt 25% van de breedte -->
+
             <div class="flex flex-col gap-1 flex-shrink-0 flex-grow-0 basis-[26%]">
                 <span class="text-gray-500">Genre:</span>
                 <span class="font-medium">{genre}</span>
             </div>
 
-            <!-- Resterende tijd sectie, neemt 45% van de breedte -->
+
             <div class="flex flex-col gap-1 flex-shrink-0 flex-grow-0 basis-[40%]">
                 <span class="text-gray-500">Resterende tijd:</span>
-                <span class="font-medium">{timeRemaining}</span> <!-- De tijd op een nieuwe regel -->
+                <span class="font-medium">{timeRemaining}</span>
             </div>
         </div>
-
-
     </div>
 </a>

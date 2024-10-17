@@ -1,80 +1,9 @@
-### GOOD GET request to return bids for a specific user with bids
-GET http://localhost:3000/users/1/bids
-Accept: application/json
-
-> {%
-    client.test("Bids for user ID 1 retrieved successfully", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(Array.isArray(response.body.bids), "Expected an array of bids");
-        client.assert(response.body.bids.length > 0, "Expected at least one bid for user ID 1");
-    });
-%}
-
-### GOOD GET request to return bids for a specific user with no bids
-GET http://localhost:3000/users/3/bids
-Accept: application/json
-
-> {%
-    client.test("No bids found for user ID 3", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.bids.length === 0, "Expected an empty array of bids for user ID 3");
-    });
-%}
-
-
-### BAD GET request for a non-existent user
-GET http://localhost:3000/users/999/bids
-Accept: application/json
-
-> {%
-    client.test("Non-existent user ID returns 404", function () {
-        client.assert(response.status === 404, "Expected status 404 for non-existent user ID");
-        client.assert(response.body.message === "User not found", "Expected 'User not found' message");
-    });
-%}
-
-###
-
-### BAD GET request with an invalid user ID (non-numeric)
-GET http://localhost:3000/users/abc/bids
-Accept: application/json
-
-> {%
-    client.test("Invalid user ID returns 400 Bad Request", function () {
-        client.assert(response.status === 400, "Expected status 400 for invalid user ID");
-        client.assert(response.body.message === "Invalid user ID", "Expected 'Invalid user ID' message");
-    });
-%}
-
-
 ### GOOD GET request to filter games by title (correcte titel)
 GET http://localhost:3000/games?title=Resident%20Evil
 Content-Type: application/json
 
 > {%
     client.test("Filter games by title works and returns games", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.length !== 0, "Expected a filled array");
-    });
-%}
-
-### GOOD GET request to filter games by category (correcte categorie)
-GET http://localhost:3000/games?category=Horror
-Content-Type: application/json
-
-> {%
-    client.test("Filter games by category works and returns games", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.length !== 0, "Expected a filled array");
-    });
-%}
-
-### GOOD GET request to filter games by publisher (correcte uitgever)
-GET http://localhost:3000/games?publisher=Sony
-Content-Type: application/json
-
-> {%
-    client.test("Filter games by publisher works and returns games", function () {
         client.assert(response.status === 200, "Response status is not 200");
         client.assert(response.body.length !== 0, "Expected a filled array");
     });
@@ -97,17 +26,6 @@ Content-Type: application/json
 
 > {%
     client.test("Filter games by title and publisher works and returns games", function () {
-        client.assert(response.status === 200, "Response status is not 200");
-        client.assert(response.body.length !== 0, "Expected a filled array");
-    });
-%}
-
-### GOOD GET request to filter games by category and startPrice
-GET http://localhost:3000/games?category=Horror&startPrice=70
-Content-Type: application/json
-
-> {%
-    client.test("Filter games by category and price works and returns games", function () {
         client.assert(response.status === 200, "Response status is not 200");
         client.assert(response.body.length !== 0, "Expected a filled array");
     });
@@ -156,6 +74,7 @@ Content-Type: application/json
     });
 %}
 
+
 ### GOOD GET request to return bids for a specific game (with bids)
 GET http://localhost:3000/games/1/bids
 Accept: application/json
@@ -171,12 +90,12 @@ Accept: application/json
 ###
 
 ### GOOD GET request to return bids for a specific game (no bids)
-GET http://localhost:3000/games/10/bids
+GET http://localhost:3000/games/9/bids
 Accept: application/json
 
 > {%
     client.test("No bids found for game ID 2", function () {
-        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.status === 404, "Response status is not 200");
         client.assert(response.body.message === "No bids found for this game", "Expected 'No bids found for this game' message");
     });
 %}
@@ -205,7 +124,6 @@ Accept: application/json
         client.assert(response.body.message === "Invalid game ID", "Expected 'Invalid game ID' message");
     });
 %}
-
 
 ### GOOD GET request to return a specific game by valid ID
 GET http://localhost:3000/games/1
@@ -242,6 +160,64 @@ Accept: application/json
         client.assert(response.status === 400, "Expected status 400 for invalid ID, but got " + response.status);
     });
 %}
+
+### GET request to example server
+GET http://localhost:3000/won-auctions
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Accept: application/json
+
+> {%
+    client.test("Valid request returns 200 OK", function () {
+        client.assert(response.status === 200, "Expected status 200, but got " + response.status);
+        client.assert(response.body.wonAuctions.length > 0, "Expected some won auctions to be returned.");
+    });
+    client.test("Response contains totalPayment", function () {
+        client.assert(response.body.totalPayment !== undefined, "Expected totalPayment field in response.");
+    });
+%}
+
+### BAD GET request with invalid token
+
+GET http://localhost:3000/won-auctions
+Authorization: Bearer hahahmal234324234
+Accept: application/json
+
+> {%
+    client.test("No won auctions returns 401 Not Found", function () {
+        client.assert(response.status === 401, "Expected status 401, but got " + response.status);
+    });
+%}
+
+### GOOD POST request to log in a user
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "emma@example.com",
+  "password": "hashedpassword3"
+}
+
+> {%
+    client.test("User logged in successfully", function () {
+        // Controleer of de status 200 is
+        client.assert(response.status === 200, "Response status is not 200");
+
+        // Controleer of de message exact "Login successful" is
+        client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
+
+        // Controleer of de gebruiker in de response de juiste e-mail heeft
+        client.assert(response.body.user.email === "emma@example.com", "Expected email to be 'emma@example.com'");
+
+        // Controleer of er een token wordt teruggestuurd
+        client.assert(response.body.token, "Expected a token in the response");
+
+        // Sla de token op in een variabele om te hergebruiken
+        pm.environment.set("jwt_token", response.body.token);
+        console.log("JWT-token opgeslagen:", response.body.token);
+    });
+%}
+
+
 
 ### GOOD POST request to add a new game
 POST http://localhost:3000/games
@@ -303,31 +279,34 @@ Content-Type: application/json
 %}
 
 ### GOOD POST request to add a new user
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-  "username": "blabla612222",
-  "email": "blabla612234",
+  "username": "Mustafa D",
+  "email": "demir61@gmail.com",
   "password": "password6183224"
 }
 
 > {%
     client.test("User added successfully", function () {
+        console.log("Response status:", response.status);
+        console.log("Response body:", response.body);
+
         // Controleer of de status 201 is
-        client.assert(response.status === 201, "Response status is not 201");
+        client.assert(response.status === 201, "Response status is not 201. Received: " + response.status);
 
         // Controleer of de message "New user created" is
-        client.assert(response.body.message === "New user created", "Expected 'New user created' message");
+        client.assert(response.body.message === "New user created", "Expected 'New user created' message, but got: " + response.body.message);
     });
 %}
 
 ### BAD POST request - Missing required fields
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-  "username": "john_doe"
+  "emailadres": "john_doe"
 }
 
 > {%
@@ -338,11 +317,10 @@ Content-Type: application/json
 %}
 
 ### BAD POST request - User already exists
-POST http://localhost:3000/users
+POST http://localhost:3000/users/register
 Content-Type: application/json
 
 {
-  "userId": 1,
   "username": "john_doe",
   "email": "john@example.com",
   "password": "hashedpassword1"
@@ -357,11 +335,11 @@ Content-Type: application/json
 
 ###
 POST http://localhost:3000/games/1/bids
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "bidId": 1,
-  "bidAmount": 70,
+  "bidAmount": 80,
   "bidTime": "2024-09-25T10:00:00Z",
   "userId": 1,
   "gameId": 1
@@ -369,19 +347,14 @@ Content-Type: application/json
 
 > {%
     client.test("Bid added successfully", function () {
-        // Controleer of de status 201 is
         client.assert(response.status === 201, "Response status is not 201");
-
-        // Controleer of de message exact "Bid added successfully" is
         client.assert(response.body.message === "Bid added successfully", "Expected 'Bid added successfully' message");
-
-        // Controleer of de bidId in de response overeenkomt met het verzoek
-        client.assert(response.body.bid.bidId === 1, "Expected bidId to be 1");
     });
 %}
 
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/games/1/bids
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
@@ -397,10 +370,10 @@ Content-Type: application/json
 
 ### BAD POST request - Game not found
 POST http://localhost:3000/games/999/bids
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "bidId": 1,
   "bidAmount": 70,
   "bidTime": "2024-09-25T10:00:00Z",
   "userId": 1
@@ -415,10 +388,10 @@ Content-Type: application/json
 
 ### BAD POST request - Invalid game ID
 POST http://localhost:3000/games/abc/bids
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "bidId": 1,
   "bidAmount": 70,
   "bidTime": "2024-09-25T10:00:00Z",
   "userId": 1
@@ -432,56 +405,33 @@ Content-Type: application/json
 %}
 
 
-### GOOD POST request to log in a user
-POST http://localhost:3000/users/login
-Content-Type: application/json
 
-{
-  "username": "john_doe",
-  "password": "hashedpassword1"
-}
-
-> {%
-    client.test("User logged in successfully", function () {
-        // Controleer of de status 200 is
-        client.assert(response.status === 200, "Response status is not 200");
-
-        // Controleer of de message exact "Login successful" is
-        client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
-
-        // Controleer of de gebruiker in de response de juiste username heeft
-        client.assert(response.body.user.username === "john_doe", "Expected username to be 'john_doe'");
-
-        // Controleer of er een token wordt teruggestuurd
-        client.assert(response.body.token, "Expected a token in the response");
-    });
-%}
 
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/users/login
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "username": "john_doe"
+  "email": "emma@example213123.com"
 }
 
 > {%
     client.test("Missing fields results in 400 Bad Request", function () {
-        // Controleer of de status 400 is
         client.assert(response.status === 400, "Response status is not 400");
 
-        // Controleer of de message exact "Missing username or password" is
-        client.assert(response.body.message === "Missing username or password", "Expected missing fields error message");
+        client.assert(response.body.message === "missing fields", "Expected missing fields error message");
     });
 %}
 
 ### BAD POST request - Incorrect password
 POST http://localhost:3000/users/login
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "username": "john_doe",
-  "password": "wrongpassword"
+  "email": "emma@example.com",
+  "password": "hashedpassword234234"
 }
 
 > {%
@@ -491,21 +441,6 @@ Content-Type: application/json
     });
 %}
 
-### BAD POST request - User not found
-POST http://localhost:3000/users/login
-Content-Type: application/json
-
-{
-  "username": "unknown_user",
-  "password": "somepassword"
-}
-
-> {%
-    client.test("User not found results in 404", function () {
-        client.assert(response.status === 404, "Response status is not 404");
-        client.assert(response.body.message.includes("User not found"), "Expected not found error");
-    });
-%}
 
 ### GOOD PUT request to update a specific game
 PUT http://localhost:3000/games/1
@@ -585,6 +520,7 @@ Content-Type: application/json
     });
 %}
 
+
 ### GOOD DELETE request to remove a specific game
 DELETE http://localhost:3000/games/1
 Content-Type: application/json
@@ -617,7 +553,3 @@ Content-Type: application/json
         client.assert(response.body.message.includes("Invalid game ID"), "Expected invalid game ID error");
     });
 %}
-
-
-
-

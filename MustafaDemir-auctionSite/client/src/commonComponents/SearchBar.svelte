@@ -1,12 +1,12 @@
 <script>
     import {createEventDispatcher} from 'svelte';
 
-    export let searchedGame = "";  // Search term received from the parent component
+    export let searchedGame = "";
     const dispatch = createEventDispatcher();
 
     const handleInput = (event) => {
-        searchedGame = event.target.value;  // Update the search term
-        dispatch('search', {searchedGame});  // Dispatch the search event
+        searchedGame = event.target.value;
+        dispatch('search', {searchedGame});
     };
 </script>
 
@@ -18,8 +18,8 @@
                     id="default-search"
                     bind:value={searchedGame}
                     class="block w-full px-4 py-2 text-sm font-normal shadow-xs text-gray-900 bg-transparent border
-                border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none leading-relaxed"
-                    placeholder="search"
+                    border-gray-300 rounded-lg placeholder-gray-400 focus:outline-none leading-relaxed"
+                    placeholder="zoek"
                     on:input={handleInput}
             >
         </div>
