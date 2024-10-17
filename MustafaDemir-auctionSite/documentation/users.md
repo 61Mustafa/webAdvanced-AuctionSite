@@ -7,5 +7,6 @@ Place the credentials for at least two users in the table below. There should be
 |-------------------|-----------------|--------------|
 | admin@example.com | hashedpassword4 | admin        |
 | emma@example.com  | hashedpassword3 | user         |
+| jane@example.com  | hashedpassword2 | user |
 
 
