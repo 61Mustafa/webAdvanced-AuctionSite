@@ -59,9 +59,9 @@ Het doel is hierbij om te kijken of de website voldoet aan alle eisen van de kla
 Elk functionele en niet-functionele requirement wordt toegewezen aan specifieke tests. De tests worden zowel handmatig en
 geautomatiseerd uitgevoerd met behulp van HTTP-requests in Webstorm.
 
-## Functionele Requirements Test Plan
-
 **_**Getest op: 17-10-2024 12 uur.**_**
+
+## Functionele Requirements Test Plan
 
 1. **Testcase T1: Weergave van veilingproducten**
     - **Doel**: Controleren of alle veilingen worden weergeven.
@@ -308,7 +308,7 @@ geautomatiseerd uitgevoerd met behulp van HTTP-requests in Webstorm.
     - **Teststappen**:
         1. Ga naar MustafaDemir-auctionSite/server/src/data/data.js
         2. Check de users array en controleer of er meerdere rollen zijn.
-    - *Verwacht resultaat**: De users hebben of een admin rol of een user rol.
+    - **Verwacht resultaat**: De users hebben of een admin rol of een user rol.
 
 ## Test Results
 <b> Functionele Requirements </b>

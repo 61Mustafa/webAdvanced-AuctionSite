@@ -22,7 +22,6 @@
         if (selectedPrice) query.push(`startPrice=${encodeURIComponent(selectedPrice)}`);
 
         const queryString = query.length > 0 ? `?${query.join('&')}` : '';
-        console.log('Fetching games from URL: ', `http://localhost:3000/games${queryString}`);
 
         const response = await fetch(`http://localhost:3000/games${queryString}`, {
             method: 'GET',
@@ -33,12 +32,10 @@
 
         if (!response.ok) {
             const result = await response.json();
-            console.log('Error response:', result);
             throw new Error(result.message || 'Failed to fetch games');
         }
 
         const gamesData = await response.json();
-        console.log('Games data:', gamesData);
         return gamesData;
     };
 
@@ -48,8 +45,6 @@
         }
 
     gamesPromise = fetchGames();
-
-        console.log(gamesPromise)
 
     const handleSearch = () => {
         gamesPromise = fetchGames();

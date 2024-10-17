@@ -110,8 +110,6 @@
             userId,
         };
 
-        console.log("Sending bid data:", bidData);
-
         try {
             const res = await fetch(`http://localhost:3000/games/${id}/bids`, {
                 method: 'POST',

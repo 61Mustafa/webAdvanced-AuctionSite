@@ -10,8 +10,6 @@ Accept: application/json
     });
 %}
 
-###
-
 ### GOOD GET request to return bids for a specific game (no bids)
 GET http://localhost:3000/games/9/bids
 Accept: application/json
@@ -34,8 +32,6 @@ Accept: application/json
         client.assert(response.body.message.includes("does not exist"), "Expected 'Game with ID does not exist' message");
     });
 %}
-
-###
 
 ### BAD GET request with an invalid game ID (non-numeric)
 GET http://localhost:3000/games/abc/bids

@@ -1,6 +1,6 @@
 ### GET request to example server
 GET http://localhost:3000/won-auctions
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Accept: application/json
 
 > {%
@@ -14,6 +14,7 @@ Accept: application/json
 %}
 
 ### BAD GET request with invalid token
+
 GET http://localhost:3000/won-auctions
 Authorization: Bearer hahahmal234324234
 Accept: application/json
@@ -23,4 +24,3 @@ Accept: application/json
         client.assert(response.status === 401, "Expected status 401, but got " + response.status);
     });
 %}
-

@@ -1,6 +1,5 @@
 ### GOOD POST request to log in a user
 POST http://localhost:3000/users/login
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
 Content-Type: application/json
 
 {
@@ -10,42 +9,36 @@ Content-Type: application/json
 
 > {%
     client.test("User logged in successfully", function () {
-        // Controleer of de status 200 is
         client.assert(response.status === 200, "Response status is not 200");
-
-        // Controleer of de message exact "Login successful" is
         client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
-
-        // Controleer of de gebruiker in de response de juiste username heeft
-        client.assert(response.body.user.email === "emma@example.com", "Expected username to be 'emma@example.com'");
-
-        // Controleer of er een token wordt teruggestuurd
+        client.assert(response.body.user.email === "emma@example.com", "Expected email to be 'emma@example.com'");
         client.assert(response.body.token, "Expected a token in the response");
+
+        client.global.set("jwt_token", response.body.token);
+        console.log("JWT-token opgeslagen:", response.body.token);
     });
 %}
 
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/users/login
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "email": "emma@example.com"
+  "email": "emma@example213123.com"
 }
 
 > {%
     client.test("Missing fields results in 400 Bad Request", function () {
-        // Controleer of de status 400 is
         client.assert(response.status === 400, "Response status is not 400");
 
-        // Controleer of de message exact "Missing username or password" is
-        client.assert(response.body.message === "Missing username or password", "Expected missing fields error message");
+        client.assert(response.body.message === "Missing email or password", "Expected Missing email or password error message");
     });
 %}
 
 ### BAD POST request - Incorrect password
 POST http://localhost:3000/users/login
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {

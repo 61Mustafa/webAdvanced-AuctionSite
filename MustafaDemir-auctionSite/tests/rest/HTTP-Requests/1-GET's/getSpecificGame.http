@@ -10,8 +10,6 @@ Accept: application/json
     });
 %}
 
-### BAD REQUESTS!!!
-
 ### BAD GET request for a non-existent game
 GET http://localhost:3000/games/999
 Accept: application/json
@@ -21,8 +19,6 @@ Accept: application/json
         client.assert(response.status === 404, "Expected status 404, but got " + response.status);
     });
 %}
-
-###
 
 ### BAD GET request with invalid game ID (non-numeric input)
 GET http://localhost:3000/games/abc

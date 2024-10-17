@@ -31,8 +31,6 @@ Content-Type: application/json
     });
 %}
 
-###
-// BAD WEATHER TESTS
 
 ### BAD GET request to filter games by non-existent title
 GET http://localhost:3000/games?title=NonExistingTitle
@@ -87,8 +85,6 @@ Accept: application/json
     });
 %}
 
-###
-
 ### GOOD GET request to return bids for a specific game (no bids)
 GET http://localhost:3000/games/9/bids
 Accept: application/json
@@ -111,8 +107,6 @@ Accept: application/json
         client.assert(response.body.message.includes("does not exist"), "Expected 'Game with ID does not exist' message");
     });
 %}
-
-###
 
 ### BAD GET request with an invalid game ID (non-numeric)
 GET http://localhost:3000/games/abc/bids
@@ -137,8 +131,6 @@ Accept: application/json
     });
 %}
 
-### BAD REQUESTS!!!
-
 ### BAD GET request for a non-existent game
 GET http://localhost:3000/games/999
 Accept: application/json
@@ -148,8 +140,6 @@ Accept: application/json
         client.assert(response.status === 404, "Expected status 404, but got " + response.status);
     });
 %}
-
-###
 
 ### BAD GET request with invalid game ID (non-numeric input)
 GET http://localhost:3000/games/abc
@@ -161,9 +151,33 @@ Accept: application/json
     });
 %}
 
+
+### GOOD POST request to log in a user
+POST http://localhost:3000/users/login
+Content-Type: application/json
+
+{
+  "email": "emma@example.com",
+  "password": "hashedpassword3"
+}
+
+> {%
+    client.test("User logged in successfully", function () {
+
+        client.assert(response.status === 200, "Response status is not 200");
+        client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
+        client.assert(response.body.user.email === "emma@example.com", "Expected email to be 'emma@example.com'");
+        client.assert(response.body.token, "Expected a token in the response");
+
+        client.global.set("jwt_token", response.body.token);
+        console.log("JWT-token opgeslagen:", response.body.token);
+    });
+%}
+
+
 ### GET request to example server
 GET http://localhost:3000/won-auctions
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Accept: application/json
 
 > {%
@@ -185,35 +199,6 @@ Accept: application/json
 > {%
     client.test("No won auctions returns 401 Not Found", function () {
         client.assert(response.status === 401, "Expected status 401, but got " + response.status);
-    });
-%}
-
-### GOOD POST request to log in a user
-POST http://localhost:3000/users/login
-Content-Type: application/json
-
-{
-  "email": "emma@example.com",
-  "password": "hashedpassword3"
-}
-
-> {%
-    client.test("User logged in successfully", function () {
-        // Controleer of de status 200 is
-        client.assert(response.status === 200, "Response status is not 200");
-
-        // Controleer of de message exact "Login successful" is
-        client.assert(response.body.message === "Login successful", "Expected 'Login successful' message");
-
-        // Controleer of de gebruiker in de response de juiste e-mail heeft
-        client.assert(response.body.user.email === "emma@example.com", "Expected email to be 'emma@example.com'");
-
-        // Controleer of er een token wordt teruggestuurd
-        client.assert(response.body.token, "Expected a token in the response");
-
-        // Sla de token op in een variabele om te hergebruiken
-        pm.environment.set("jwt_token", response.body.token);
-        console.log("JWT-token opgeslagen:", response.body.token);
     });
 %}
 
@@ -293,10 +278,7 @@ Content-Type: application/json
         console.log("Response status:", response.status);
         console.log("Response body:", response.body);
 
-        // Controleer of de status 201 is
         client.assert(response.status === 201, "Response status is not 201. Received: " + response.status);
-
-        // Controleer of de message "New user created" is
         client.assert(response.body.message === "New user created", "Expected 'New user created' message, but got: " + response.body.message);
     });
 %}
@@ -405,8 +387,6 @@ Content-Type: application/json
 %}
 
 
-
-
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/users/login
 Authorization: Bearer {{jwt_token}}
@@ -420,7 +400,7 @@ Content-Type: application/json
     client.test("Missing fields results in 400 Bad Request", function () {
         client.assert(response.status === 400, "Response status is not 400");
 
-        client.assert(response.body.message === "missing fields", "Expected missing fields error message");
+        client.assert(response.body.message === "Missing email or password", "Expected Missing email or password error message");
     });
 %}
 

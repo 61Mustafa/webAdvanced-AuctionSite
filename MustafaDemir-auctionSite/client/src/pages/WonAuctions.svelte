@@ -19,7 +19,6 @@
             }
 
             const data = await res.json();
-            console.log('Fetched won auctions:', data);
             wonAuctions = data.wonAuctions;
             totalPayment = data.totalPayment;
             return data;

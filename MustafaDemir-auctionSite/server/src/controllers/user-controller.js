@@ -13,7 +13,6 @@ export function addUser(req, res) {
 
     // Check of alle velden zijn ingevuld
     if (!username || !email || !password) {
-        console.log("Missing required fields:", {username, email, password});
         return res.status(StatusCodes.BAD_REQUEST).json({message: 'Missing required fields'});
     }
 
@@ -26,7 +25,6 @@ export function addUser(req, res) {
     // Controleer of de gebruiker al bestaat
     const existingUser = users.find(user => user.email.toLowerCase() === email.toLowerCase());
     if (existingUser) {
-        console.log("User already exists:", existingUser);
         return res.status(StatusCodes.CONFLICT).json({message: 'User already exists'});
     }
 
@@ -35,9 +33,7 @@ export function addUser(req, res) {
 
     // Hash het wachtwoord van de gebruiker
     try {
-        console.log("Hashing password...");
         const hashedPassword = bcrypt.hashSync(password, 12);
-        console.log("Password hashed successfully");
 
         // Voeg de nieuwe gebruiker toe aan de lijst
         const newUser = {

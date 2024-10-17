@@ -45,7 +45,6 @@
 
             if (response.ok) {
                 const payload = JSON.parse(atob(data.token.split('.')[1]));
-                console.log(payload);
 
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("user", JSON.stringify({

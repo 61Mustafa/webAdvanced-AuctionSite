@@ -23,12 +23,10 @@
         page('/login', () => mount(LoginPage));
         page('/register', () => mount(RegisterPage));
         page('/games/:id', (context) => {
-            console.log("Navigating to game details with ID:", context.params.id);
             mount(GameDetails, {id: context.params.id});
         });
         page('/admin', () => mount(AdminPanel));
         page('/won-auctions', () => {
-            console.log('Navigating to won auctions page');
             mount(WonAuctions);
         });
         page();

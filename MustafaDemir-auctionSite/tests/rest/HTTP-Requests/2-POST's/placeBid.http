@@ -1,12 +1,10 @@
+###
 POST http://localhost:3000/games/1/bids
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
-  "bidAmount": 70,
-  "bidTime": "2024-09-25T10:00:00Z",
-  "userId": 1,
-  "gameId": 1
+  "bidAmount": 80
 }
 
 > {%
@@ -18,7 +16,7 @@ Content-Type: application/json
 
 ### BAD POST request - Missing required fields
 POST http://localhost:3000/games/1/bids
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
@@ -34,7 +32,7 @@ Content-Type: application/json
 
 ### BAD POST request - Game not found
 POST http://localhost:3000/games/999/bids
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {
@@ -52,7 +50,7 @@ Content-Type: application/json
 
 ### BAD POST request - Invalid game ID
 POST http://localhost:3000/games/abc/bids
-Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MywiZW1haWwiOiJlbW1hQGV4YW1wbGUuY29tIiwicm9sZSI6InVzZXIiLCJpYXQiOjE3Mjg5MDQ3MDEsImV4cCI6MTcyODk5MTEwMX0.Z-evconqIdzwCl2iNdbzAaP-1hpm3R-PgII_hbf-tg0
+Authorization: Bearer {{jwt_token}}
 Content-Type: application/json
 
 {

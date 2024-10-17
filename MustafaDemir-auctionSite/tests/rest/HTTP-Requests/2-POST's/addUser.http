@@ -13,10 +13,7 @@ Content-Type: application/json
         console.log("Response status:", response.status);
         console.log("Response body:", response.body);
 
-        // Controleer of de status 201 is
         client.assert(response.status === 201, "Response status is not 201. Received: " + response.status);
-
-        // Controleer of de message "New user created" is
         client.assert(response.body.message === "New user created", "Expected 'New user created' message, but got: " + response.body.message);
     });
 %}

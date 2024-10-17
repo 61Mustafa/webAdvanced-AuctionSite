@@ -31,9 +31,6 @@ Content-Type: application/json
     });
 %}
 
-###
-// BAD WEATHER TESTS
-
 ### BAD GET request to filter games by non-existent title
 GET http://localhost:3000/games?title=NonExistingTitle
 Content-Type: application/json
