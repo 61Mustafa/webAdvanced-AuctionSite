@@ -63,5 +63,4 @@ Please take a look at the following functions, you will find them useful for the
 It would of course be better if the changes were not lost when the server restarts. To make this happen it is possible to store the Javascript array to a JSON file.
 
 _Please note that storing to a file is **not** part of the assignment!_
-
 However, if you would like to check out [Reading and Writing JSON Files with Node.js](https://stackabuse.com/reading-and-writing-json-files-with-node-js/)

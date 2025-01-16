@@ -8,7 +8,7 @@ export const games = [
         publisher: "Capcom",
         category: "Horror",
         startingPrice: 59,
-        auctionEndDate: "2024-11-04",
+        auctionEndDate: "2025-10-13",
         image_path: "/photos/Resident_Evil_Village.png",
         bids: [
             {bidId: 1, bidAmount: 60, bidTime: "2024-09-25T10:00:00Z", userId: 1, gameId: 1},

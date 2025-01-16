@@ -23,7 +23,7 @@ The table below shows an overview of which test covers which functional requirem
 
 
 
-### Non funtional
+### Non functional
 
 The table below shows an overview of which test covers which non-functional requirements
 
